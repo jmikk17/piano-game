@@ -34,6 +34,8 @@ class Config:
         LOG_LEVEL = logging.ERROR
         LOG_TO_CONSOLE = False
 
-# The initial idea was tp have multiple config classes for testing
-# This doesn't work however, since all files specifically import this one instance, and therefore all files would have to be changed
+# The std_cfg instance is imported by all, so we could e.g. do:
+# if DEBUG_mode:
+#   std_cfg = Config_debug()
+# else: 
 std_cfg = Config()

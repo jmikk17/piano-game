@@ -6,6 +6,7 @@ import error
 import os
 from abc import ABC, abstractmethod
 from assets import MenuAssets
+import sys
 
 from resource_path import resource_path
 
@@ -399,49 +400,63 @@ class OptionsMenu(BaseMenu):
 
 class MenuManager:
     def __init__(self):
+        """
+        Class that controls menus. Handles swapping (internally), input from player and drawing to screen (through specific menu class)
+        ----------
+        Attributes:
+        current_menu : menu object (child of BaseMenu)
+            currently selected menu
+        ----------
+        Methods:
+        TODO
+        """
         # When menu is first created we must load assets
         self.menu_assets = MenuAssets()
         self.menu_assets.load()
 
-        self.current_menu = None
+        # Instansiate the three different menus
         self.menus = {
             "main": MainMenu(self.menu_assets),
             "song_select": SongSelectMenu(self.menu_assets),
             "options": OptionsMenu(self.menu_assets)
         }
+
+        # Initilize to main menu when menu manager is first instansiated
         self.show_menu("main")
     
     def show_menu(self, menu_name):
+        """Change reference of current_menu to a specified menu"""
         self.current_menu = self.menus[menu_name]
     
     def draw(self, screen):
+        """Draw the menu through its own drawing function"""
         if self.current_menu:
             self.current_menu.draw(screen)
     
     def handle_input(self, event):
+        """Handle input through the menus own function"""
+        # Returns action, data as "START_GAME",song_name if a song is selected, which indicates we need a state swap
+        # Also handles quit and menu swap if requested
         if self.current_menu:
             action, data = self.current_menu.handle_input(event)
             if action:
                 if action == "START_GAME":
                     return action, data
-                else:
-                    self.handle_action(action)
+                elif action == "SHOW_MAIN_MENU":
+                    self.show_menu("main")
+                elif action == "SHOW_SONG_SELECT":
+                    self.show_menu("song_select")
+                elif action == "SHOW_OPTIONS":
+                    self.show_menu("options")
+                elif action == "QUIT":
+                    pygame.quit()
+                    sys.exit()
         return (None,None)
     
-    def handle_action(self, action):
-        if action == "SHOW_MAIN_MENU":
-            self.show_menu("main")
-        elif action == "SHOW_SONG_SELECT":
-            self.show_menu("song_select")
-        elif action == "SHOW_OPTIONS":
-            self.show_menu("options")
-        elif action == "QUIT":
-            pygame.quit()
-            return
-
     def cleanup_menu_assets(self):
         """Cleanup menu assets when transitioning to game"""
-        if self.menu_assets:  # Check if assets exist before unloading
+        if self.menu_assets:  
+            # Check if assets exist before unloading
             self.menu_assets.unload()
             self.menu_assets = None
             self.current_menu = None
@@ -450,7 +465,7 @@ class MenuManager:
     
     def reinitialize_menus(self):
         """Reinitialize menus when returning from game"""
-        if not hasattr(self, 'menu_assets') or self.menu_assets is None:
+        if self.menu_assets is None:
             self.menu_assets = MenuAssets()
             self.menu_assets.load()
             
@@ -462,5 +477,8 @@ class MenuManager:
             self.show_menu("main")
     
     def __del__(self):
-        if hasattr(self, 'menu_assets') and self.menu_assets is not None:
+        # Custom destructor, called when all references to MenuManager is destroyed
+        """Make sure that assets are not still in memory when MenuManager is destroyed"""
+        if self.menu_assets is not None:
             self.cleanup_menu_assets()
+            self.menu_assets = None

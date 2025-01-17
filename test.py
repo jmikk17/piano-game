@@ -1,3 +1,4 @@
+# Feature testing, quick and unreliable implementations
 import pygame
 from auxil import WHITE, BLUE, get_sysfont, RED, GREEN
 

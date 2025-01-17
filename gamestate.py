@@ -4,6 +4,8 @@ from menu import MenuManager
 from game import Game
 
 ### TODO need to implement game before cleanup and reinitialize can be tested!
+# Structure of cleanup might be problematic if we dont load a frame of e.g. game before cleaning menu assets
+# Unless we always load with an "if asset:" statement, then we would just get a blank screen for 1 frame
 class GameStateManager:
     def __init__(self):
         self.menu_manager = MenuManager()
@@ -34,8 +36,7 @@ class GameStateManager:
                         self.handle_state_transition(action, data)
             
         elif self.current_state == "GAME":
-        # In Game we might need to update without there being an input,
-        # so we handle quit inside
+        # In Game we might need to update without there being an input, so we handle quit inside
             game_status = self.game.update(dt)
             if game_status == "QUIT_TO_MENU":
                 self.handle_state_transition("RETURN_TO_MENU", None)
