@@ -6,6 +6,7 @@ import test
 
 from resource_path import resource_path
 
+# Need to initilize mixer before we can load in sound
 pygame.mixer.init()
 
 class MenuAssets:
