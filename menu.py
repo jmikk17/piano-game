@@ -93,7 +93,7 @@ class BaseMenu(ABC):
     def draw_title(self, screen, title):
         title_surface = self.title_font.render(title, True, self.layout.colors['text'])
         title_rect = title_surface.get_rect(
-            centerx=std_cfg.SCREEN_WIDTH // 2,
+            centerx=std_cfg.SCREEN_WIDTH / 2,
             y=self.layout.title_y
         )
         screen.blit(title_surface, title_rect)

@@ -4,6 +4,7 @@ import auxil
 
 class UILayout:
     def __init__(self, screen_width, screen_height):
+        # Maybe wrap all of this in an update function, which can be called on screen-resize?
         # Base unit for scaling (1% of screen height)
         self.unit = screen_height * 0.01
         
@@ -54,13 +55,12 @@ class UILayout:
             item_rect.centery
         )
     
-    def get_instruction_pos(self, index, text_width, total_instructions):
-        """Get position for an instruction text, adjusted for total number of instructions"""
-        # Calculate total height of all instructions
-        total_height = total_instructions * self.instructions_spacing
-        # Adjust starting Y position based on total instructions
-        start_y = self.instructions_y - (total_height / 2)
-        return (
-            std_cfg.SCREEN_WIDTH // 2 - text_width // 2,
-            start_y + index * self.instructions_spacing
-        )
+class Button:
+    def __init__(self, x, y, width, height, text):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+        self.surface = pygame.Surface((self.width, self.height))
+        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
