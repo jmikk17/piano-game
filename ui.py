@@ -4,32 +4,6 @@ import auxil
 
 class UILayout:
     def __init__(self, screen_width, screen_height):
-        # Maybe wrap all of this in an update function, which can be called on screen-resize?
-        # Base unit for scaling (1% of screen height)
-        self.unit = screen_height * 0.01
-        
-        # Calculate positions relative to screen size
-        self.title_y = screen_height * 0.1  # 10% from top
-        self.content_start_y = screen_height * 0.25  # 25% from top
-        self.content_end_y = screen_height * 0.8  # 80% from top (where content area ends)
-        
-        # Item sizing (relative to screen height)
-        self.item_height = self.unit * 7  # 7% of screen height
-        self.item_padding = self.unit * 1.5  # 1.5% of screen height
-        
-        # Width calculations
-        self.content_width = screen_width * 0.8  # 80% of screen width
-        self.content_x = screen_width * 0.1  # 10% from left
-        
-        # Instructions positioning
-        self.instructions_y = screen_height * 0.85  # 85% from top
-        self.instructions_spacing = self.unit * 4  # 4% of screen height
-        
-        # Scrollbar
-        self.scrollbar_width = self.unit * 2  # 2% of screen height
-        self.scrollbar_padding = self.unit  # 1% of screen height
-        
-        # Common colors
         self.colors = {
             'background': auxil.WHITE,
             'selected': (200, 200, 255),
@@ -37,6 +11,16 @@ class UILayout:
             'selected_text': auxil.BLUE,
             'instructions': (100, 100, 100)
         }
+
+        self.update_ui(screen_width, screen_height)
+
+    def update_ui(self, screen_width, screen_height):
+        self.y_unit = screen_height * 0.01
+        self.x_unit = screen_width * 0.01
+
+        self.title_y = self.y_unit * 10 
+        self.content_start_y = self.y_unit * 25
+        self.content_end_y = self.y_unit * 80
     
     def get_item_rect(self, index):
         """Get the rectangle for a menu item at given index in list"""
@@ -54,13 +38,35 @@ class UILayout:
             item_rect.centerx,
             item_rect.centery
         )
-    
+
 class Button:
-    def __init__(self, x, y, width, height, text):
+    def __init__(self, x, y, width, height, text='', font=std_cfg.FONT):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
+        self.text = text
+        self.font = auxil.get_sysfont(font, 36)
 
         self.surface = pygame.Surface((self.width, self.height))
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+
+    def draw(self, screen, outline=None):
+        # outline is color of outline
+        if outline:
+            pygame.draw.rect(screen, outline, (self.x-2, self.y-2, self.width+4, self.height+4), 0)
+
+        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height), 0)
+
+        if self.text != '':
+            font = pygame.font.SysFont('comicsans', 60)
+            text = font.render(self.text, 1, (0, 0, 0))
+            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
+
+    def isOver(self, pos):
+        # Pos is the mouse position or a tuple of (x, y) coordinates
+        if pos[0] > self.x and pos[0] < self.x + self.width:
+            if pos[1] > self.y and pos[1] < self.y + self.height:
+                return True
+            
+        return False
