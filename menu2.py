@@ -48,7 +48,8 @@ class MainMenu(BaseMenu):
         super().__init__(assets)
         self.options = ["Play", "Options", "Exit"]
         for i in self.options:
-            Button(x,y,width,height,self.options[i])
+            Button(self.layout.x_center,self.layout.content_start_y,
+                   width,height,self.options[i])
 
     def draw(self, screen):
         if self.assets.background:
