@@ -9,7 +9,7 @@ import os
 from abc import ABC, abstractmethod
 from assets import MenuAssets
 import sys
-from ui import UILayout
+from ui import UILayout, Button
 
 class BaseMenu(ABC):
     def __init__(self,assets):
@@ -18,6 +18,7 @@ class BaseMenu(ABC):
         # TODO should be changed so all children refer to same ui guidelines, so we only need to update one
         self.layout = UILayout(std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT)
         self.assets = assets
+        self.buttons = []
     
     @abstractmethod
     def draw(self, screen):
@@ -46,6 +47,8 @@ class MainMenu(BaseMenu):
     def __init__(self, assets):
         super().__init__(assets)
         self.options = ["Play", "Options", "Exit"]
+        for i in self.options:
+            Button(x,y,width,height,self.options[i])
 
     def draw(self, screen):
         if self.assets.background:

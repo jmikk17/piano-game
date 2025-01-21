@@ -18,6 +18,9 @@ class UILayout:
         self.y_unit = screen_height * 0.01
         self.x_unit = screen_width * 0.01
 
+        self.x_center = screen_width / 2
+        self.y_center = screen_height / 2
+
         self.title_y = self.y_unit * 10 
         self.content_start_y = self.y_unit * 25
         self.content_end_y = self.y_unit * 80
