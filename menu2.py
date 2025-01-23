@@ -48,13 +48,11 @@ class MainMenu(BaseMenu):
         super().__init__(assets)
         #self.options = ["Play", "Options", "Exit"]
         self.options = ["Play"]
-        new_y = 0
         for i,name in enumerate(self.options):
-            #self.buttons.append(Button(self.layout.x_center,self.layout.content_start_y,
-            #       10,10,name))
-            self.buttons.append(Button(self.layout.x_center,self.layout.content_start_y,name))
-            if i != 0:
-                new_y = self.buttons[i].rect.bottomy +
+            if i == 0:
+                self.buttons.append(Button(self.layout.x_center,self.layout.content_start_y,name))
+                new_y = self.buttons[i].rect.bottomy + self.layout.
+            else:
             #TODO problematic we use y as center of button when we dont know the size of the button
 
     def draw(self, screen):

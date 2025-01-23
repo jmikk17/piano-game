@@ -58,8 +58,6 @@ class Button:
             y = self.y
         )
 
-        self.bot_y = self.rect.bottomy
-
     def draw(self, screen, outline=None):
         #pygame.draw.rect(screen,auxil.BLACK,self.rect)
         screen.blit(self.surface,self.rect)
