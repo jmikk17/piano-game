@@ -8,6 +8,7 @@ class UILayout:
             'background': auxil.WHITE,
             'selected': (200, 200, 255),
             'text': auxil.BLACK,
+            'title': auxil.BLUE,
             'selected_text': auxil.BLUE,
             'instructions': (100, 100, 100)
         }
@@ -43,28 +44,25 @@ class UILayout:
         )
 
 class Button:
-    def __init__(self, x, y, width, height, text='', font=std_cfg.FONT):
-        self.x = x
+    def __init__(self, cen_x, y, text='', font=std_cfg.FONT):
+        self.cen_x = cen_x
         self.y = y
-        self.width = width
-        self.height = height
         self.text = text
         self.font = auxil.get_sysfont(font, 36)
+        
+        self.color = auxil.BLUE
 
-        self.surface = pygame.Surface((self.width, self.height))
-        self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.surface = self.font.render(self.text, True, self.color)
+        self.rect = self.surface.get_rect(
+            centerx = self.cen_x,
+            y = self.y
+        )
+
+        self.bot_y = self.rect.bottomy
 
     def draw(self, screen, outline=None):
-        # outline is color of outline
-        if outline:
-            pygame.draw.rect(screen, outline, (self.x-2, self.y-2, self.width+4, self.height+4), 0)
-
-        pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height), 0)
-
-        if self.text != '':
-            font = pygame.font.SysFont('comicsans', 60)
-            text = font.render(self.text, 1, (0, 0, 0))
-            screen.blit(text, (self.x + (self.width/2 - text.get_width()/2), self.y + (self.height/2 - text.get_height()/2)))
+        #pygame.draw.rect(screen,auxil.BLACK,self.rect)
+        screen.blit(self.surface,self.rect)
 
     def isOver(self, pos):
         # Pos is the mouse position or a tuple of (x, y) coordinates

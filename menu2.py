@@ -36,7 +36,7 @@ class BaseMenu(ABC):
     def draw_title(self, screen, title):
         """Draws title of selected menu"""
         # Can be made abstract later if we need different titles
-        title_surface = self.title_font.render(title, True, self.layout.colors['text'])
+        title_surface = self.title_font.render(title, True, self.layout.colors['title'])
         title_rect = title_surface.get_rect(
             centerx=std_cfg.SCREEN_WIDTH / 2,
             y=self.layout.title_y
@@ -46,10 +46,16 @@ class BaseMenu(ABC):
 class MainMenu(BaseMenu):
     def __init__(self, assets):
         super().__init__(assets)
-        self.options = ["Play", "Options", "Exit"]
-        for i in self.options:
-            Button(self.layout.x_center,self.layout.content_start_y,
-                   width,height,self.options[i])
+        #self.options = ["Play", "Options", "Exit"]
+        self.options = ["Play"]
+        new_y = 0
+        for i,name in enumerate(self.options):
+            #self.buttons.append(Button(self.layout.x_center,self.layout.content_start_y,
+            #       10,10,name))
+            self.buttons.append(Button(self.layout.x_center,self.layout.content_start_y,name))
+            if i != 0:
+                new_y = self.buttons[i].rect.bottomy +
+            #TODO problematic we use y as center of button when we dont know the size of the button
 
     def draw(self, screen):
         if self.assets.background:
@@ -57,7 +63,10 @@ class MainMenu(BaseMenu):
         else:
             screen.fill(self.layout.colors['background'])
 
-        self.draw_title(screen, "Piano game")
+        super().draw_title(screen, "Piano game")
+
+        for button in self.buttons:
+            button.draw(screen, auxil.RED)
         
     def handle_input(self, event):
         return super().handle_input(event)
