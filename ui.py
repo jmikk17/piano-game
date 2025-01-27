@@ -2,8 +2,23 @@ import pygame
 from cfg import std_cfg
 import auxil
 
+class Mediator:
+    def __init__(self):
+        self.menu = None
+        self.ui = None
+
+    def set_menu(self,menu):
+        self.menu = menu
+
+    def set_ui(self,ui):
+        self.ui = ui 
+
+    def notify(self,ui):
+            self.menu.handle_ui_event(ui)
+
 class UILayout:
-    def __init__(self, screen_width, screen_height):
+    def __init__(self, screen_width, screen_height, mediator):
+        self.mediator = mediator
         self.colors = {
             'background': auxil.WHITE,
             'selected': (200, 200, 255),
@@ -13,9 +28,10 @@ class UILayout:
             'instructions': (100, 100, 100)
         }
 
-        self.update_ui(screen_width, screen_height)
+        self.update_ui(screen_width, screen_height, False)
+        # cant initilize with update, now that it calls mediator
 
-    def update_ui(self, screen_width, screen_height):
+    def update_ui(self, screen_width, screen_height, mediate):
         self.y_unit = screen_height * 0.01
         self.x_unit = screen_width * 0.01
 
@@ -25,6 +41,9 @@ class UILayout:
         self.title_y = self.y_unit * 10 
         self.content_start_y = self.y_unit * 25
         self.content_end_y = self.y_unit * 80
+
+        if mediate:
+            self.mediator.notify(self)
     
     def get_item_rect(self, index):
         """Get the rectangle for a menu item at given index in list"""

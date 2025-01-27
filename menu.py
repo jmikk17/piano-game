@@ -413,6 +413,8 @@ class MenuManager:
         # When menu is first created we must load assets
         self.menu_assets = MenuAssets()
         self.menu_assets.load()
+        
+        # TODO initilize layout here, argument to menus, and menus are then changed through an observer pattern?
 
         # Instansiate the three different menus
         self.menus = {
