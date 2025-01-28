@@ -16,7 +16,7 @@ class Mediator:
     def notify(self,ui):
             self.menu.handle_ui_event(ui)
 
-class UILayout:
+class UIAuxil:
     def __init__(self, screen_width, screen_height, mediator):
         self.mediator = mediator
         self.colors = {

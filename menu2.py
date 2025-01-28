@@ -66,7 +66,7 @@ class MainMenu(BaseMenu):
         else:
             screen.fill(self.layout.colors['background'])
 
-        super().draw_title(screen, self.layout.x_center, self.layout.title_y,"Piano game")
+        self.draw_title(screen, self.layout.x_center, self.layout.title_y,"Piano game")
 
         for button in self.buttons:
             button.draw(screen, auxil.RED)
@@ -83,7 +83,7 @@ def main():
     screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT),pygame.RESIZABLE)
     mediator = ui.Mediator()
     # UI called should be changed to get screen size when returning to menu from game
-    layout = ui.UILayout(std_cfg.SCREEN_WIDTH,std_cfg.SCREEN_HEIGHT,mediator)
+    layout = ui.UIAuxil(std_cfg.SCREEN_WIDTH,std_cfg.SCREEN_HEIGHT,mediator)
     menu_assets = MenuAssets()
     menu_assets.load()
     menu = MainMenu(menu_assets,layout,mediator)
