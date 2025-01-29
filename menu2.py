@@ -20,7 +20,6 @@ class BaseMenu(ABC):
         #self.layout = UILayout(std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT)
         self.layout = layout 
         self.assets = assets
-        self.buttons = []
         self.mediator = mediator
     
     @abstractmethod
@@ -50,18 +49,19 @@ class MainMenu(BaseMenu):
     def __init__(self, assets, layout, mediator):
         super().__init__(assets, layout, mediator)
         mediator.set_menu(self)
-        #self.options = ["Play", "Options", "Exit"]
-        self.options = ["Play"]
+        self.options = ["Play", "Options", "Exit"]
+        self.buttons = []
+        self.scaled_background = None
+        #self.options = ["Play"]
+        button_y = self.layout.content_start_y
         for i,name in enumerate(self.options):
-            if i == 0:
-                self.buttons.append(ui.Button(self.layout.x_center,self.layout.content_start_y,name))
-                #new_y = self.buttons[i].rect.bottomy + self.layout.
-            else:
-                pass
-            #TODO problematic we use y as center of button when we dont know the size of the button
+            self.buttons.append(ui.Button(self.layout.x_center,button_y,name))
+            button_y = self.buttons[i].rect.bottom + self.layout.pad_y
 
     def draw(self, screen):
-        if self.assets.background:
+        if self.scaled_background:
+            screen.blit(self.scaled_background, (0, 0))
+        elif self.assets.background:
             screen.blit(self.assets.background, (0, 0))
         else:
             screen.fill(self.layout.colors['background'])
@@ -75,8 +75,17 @@ class MainMenu(BaseMenu):
         return super().handle_input(event)
 
     def handle_ui_event(self, ui):
+        # Get new scaled ui guides
         self.layout = ui 
-        # TODO update buttons here
+
+        # Update buttons
+        button_y = self.layout.content_start_y
+        for i,button in enumerate(self.buttons):
+            button.update(self.layout.x_center, button_y)
+            button_y = self.buttons[i].rect.bottom + self.layout.pad_y
+
+        # Scale background
+        self.scaled_background = pygame.transform.scale(self.assets.background, (self.layout.x_unit*100, self.layout.y_unit*100))
         
 def main():
     pygame.init()

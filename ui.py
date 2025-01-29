@@ -29,7 +29,6 @@ class UIAuxil:
         }
 
         self.update_ui(screen_width, screen_height, False)
-        # cant initilize with update, now that it calls mediator
 
     def update_ui(self, screen_width, screen_height, mediate):
         self.y_unit = screen_height * 0.01
@@ -41,6 +40,8 @@ class UIAuxil:
         self.title_y = self.y_unit * 10 
         self.content_start_y = self.y_unit * 25
         self.content_end_y = self.y_unit * 80
+
+        self.pad_y = self.y_unit * 5
 
         if mediate:
             self.mediator.notify(self)
@@ -72,6 +73,14 @@ class Button:
         self.color = auxil.BLUE
 
         self.surface = self.font.render(self.text, True, self.color)
+        self.rect = self.surface.get_rect(
+            centerx = self.cen_x,
+            y = self.y
+        )
+
+    def update(self, new_cen_x, new_y):
+        self.cen_x = new_cen_x
+        self.y = new_y
         self.rect = self.surface.get_rect(
             centerx = self.cen_x,
             y = self.y
