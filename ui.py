@@ -64,15 +64,17 @@ class UIAuxil:
         )
 
 class Button:
-    def __init__(self, cen_x, y, text='', font=std_cfg.FONT):
+    def __init__(self, cen_x, y, color, hover_color, text='', font=std_cfg.FONT):
         self.cen_x = cen_x
         self.y = y
         self.text = text
         self.font = auxil.get_sysfont(font, 36)
         
-        self.color = auxil.BLUE
+        self.color = color
+        self.hover_color = hover_color
 
         self.surface = self.font.render(self.text, True, self.color)
+        self.hover_surface = self.font.render(self.text, True, self.hover_color)
         self.rect = self.surface.get_rect(
             centerx = self.cen_x,
             y = self.y
@@ -87,13 +89,20 @@ class Button:
         )
 
     def draw(self, screen, outline=None):
-        #pygame.draw.rect(screen,auxil.BLACK,self.rect)
-        screen.blit(self.surface,self.rect)
+        # Move this out and give as argument, if needed by anything else
+        pos = pygame.mouse.get_pos()
+
+        hover = self.isOver(pos)
+
+        if hover:
+            screen.blit(self.hover_surface,self.rect)
+        else:
+            screen.blit(self.surface,self.rect)
 
     def isOver(self, pos):
         # Pos is the mouse position or a tuple of (x, y) coordinates
-        if pos[0] > self.x and pos[0] < self.x + self.width:
-            if pos[1] > self.y and pos[1] < self.y + self.height:
+        if pos[0] > self.rect.x and pos[0] < self.rect.x + self.rect.width:
+            if pos[1] > self.rect.y and pos[1] < self.rect.y + self.rect.height:
                 return True
             
         return False

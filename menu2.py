@@ -47,15 +47,18 @@ class BaseMenu(ABC):
 
 class MainMenu(BaseMenu):
     def __init__(self, assets, layout, mediator):
+
         super().__init__(assets, layout, mediator)
         mediator.set_menu(self)
         self.options = ["Play", "Options", "Exit"]
-        self.buttons = []
+
         self.scaled_background = None
-        #self.options = ["Play"]
+
+        self.buttons = []
         button_y = self.layout.content_start_y
         for i,name in enumerate(self.options):
-            self.buttons.append(ui.Button(self.layout.x_center,button_y,name))
+            self.buttons.append(ui.Button(self.layout.x_center,button_y,
+                                          self.layout.colors['text'],self.layout.colors['selected'],name))
             button_y = self.buttons[i].rect.bottom + self.layout.pad_y
 
     def draw(self, screen):
@@ -72,7 +75,16 @@ class MainMenu(BaseMenu):
             button.draw(screen, auxil.RED)
         
     def handle_input(self, event):
-        return super().handle_input(event)
+        if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            for button in self.buttons:
+                if button.isOver(pos):
+                    # return button.text to menumanager here
+                    if button.text == "Exit":
+                        pygame.quit()
+                        sys.exit()
+                    else: 
+                        print(button.text)
 
     def handle_ui_event(self, ui):
         # Get new scaled ui guides
@@ -99,9 +111,10 @@ def main():
     while True:
         menu.draw(screen)
         for event in pygame.event.get():
+            menu.handle_input(event)
             if event.type == pygame.QUIT:
                 pygame.quit()
-                return
+                sys.exit()
             if event.type == pygame.VIDEORESIZE:
                 width, height = event.size
                 screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
