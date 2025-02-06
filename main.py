@@ -9,7 +9,7 @@ def main():
 
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT),pygame.RESIZABLE)
+    screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT))
     pygame.display.set_caption("Piano game")
     
     error.setup_logger()
