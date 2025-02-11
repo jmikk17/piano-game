@@ -11,16 +11,16 @@ from assets import MenuAssets
 import sys
 #from ui import UILayout, Button
 import ui
+from resource_path import resource_path
 
 class BaseMenu(ABC):
-    def __init__(self,assets,layout,mediator):
+    def __init__(self,assets,layout):
         self.font = auxil.get_sysfont(std_cfg.FONT, 36)
         self.title_font = auxil.get_sysfont(std_cfg.FONT, 48)
         # TODO should be changed so all children refer to same ui guidelines, so we only need to update one
         #self.layout = UILayout(std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT)
         self.layout = layout 
         self.assets = assets
-        self.mediator = mediator
     
     @abstractmethod
     def draw(self, screen):
@@ -30,11 +30,10 @@ class BaseMenu(ABC):
     def handle_input(self, event):
         pass
 
-#   @abstractmethod
-#   def get_items(self):
-#       """Return the list of items to be displayed"""
-#       pass
-    
+    @abstractmethod
+    def update_menu_ui(self, layout):
+        pass
+
     def draw_title(self, screen, x_pos, y_pos, title):
         """Draws title of selected menu"""
         # Can be made abstract later if we need different titles
@@ -46,10 +45,8 @@ class BaseMenu(ABC):
         screen.blit(title_surface, title_rect)
 
 class MainMenu(BaseMenu):
-    def __init__(self, assets, layout, mediator):
-
-        super().__init__(assets, layout, mediator)
-        mediator.set_menu(self)
+    def __init__(self, assets, layout):
+        super().__init__(assets, layout)
         self.options = ["Play", "Options", "Exit"]
 
         self.scaled_background = None
@@ -72,26 +69,27 @@ class MainMenu(BaseMenu):
         self.draw_title(screen, self.layout.x_center, self.layout.title_y,"Piano game")
 
         for button in self.buttons:
-            button.draw(screen, auxil.RED)
+            button.draw(screen)
         
     def handle_input(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             for button in self.buttons:
                 if button.isOver(pos):
-                    # return button.text to menumanager here
                     if button.text == "Exit":
                         pygame.quit()
                         sys.exit()
                     elif button.text == "Play": 
                         print(button.text)
-                        return "START_SONG_SELECT"
+                        return "SHOW_SONG_SELECT", None
                     elif button.text == "Options": 
-                        return "START_OPTIONS"
+                        print(button.text)
+                        return "SHOW_OPTIONS", None
+        return None, None
 
-    def handle_ui_event(self, ui):
+    def update_menu_ui(self, layout):
         # Get new scaled ui guides
-        self.layout = ui 
+        self.layout = layout 
 
         # Update buttons
         button_y = self.layout.content_start_y
@@ -102,16 +100,73 @@ class MainMenu(BaseMenu):
         # Scale background
         self.scaled_background = pygame.transform.scale(self.assets.background, (self.layout.x_unit*100, self.layout.y_unit*100))
 
+class SongSelectMenu(BaseMenu):
+    def __init__(self, assets, layout):
+        super().__init__(assets, layout)
+        self.songs = []
+        self.buttons = []
+        self.load_available_songs()
+
+        self.scaled_background = None
+    
+    def load_available_songs(self):
+        song_dir = resource_path("songs/")
+        if not os.path.exists(song_dir):
+            error.handle_error("Songs dir not found", "fatal")
+
+        song_files = [f for f in os.listdir(song_dir) if f.endswith(".json")] 
+
+        for file in song_files:
+            with open(os.path.join(song_dir, file)) as f:
+                song_data = json.load(f)
+                self.songs.append({
+                    "filename": file,
+                    "title": song_data.get("title", file),
+                    "difficulty": song_data.get("difficulty", "Normal"),
+                    "bpm": song_data.get("bpm", std_cfg.BPM)
+                })
+
+        button_y = self.layout.content_start_y
+        for idx,song in enumerate(self.songs):
+            self.buttons.append(ui.Button(self.layout.x_center,button_y,
+                                          self.layout.colors['text'],self.layout.colors['selected'],song['title']))
+            button_y = self.buttons[idx].rect.bottom + self.layout.pad_y
+
+    def draw(self, screen):
+        if self.scaled_background:
+            screen.blit(self.scaled_background, (0, 0))
+        elif self.assets.background:
+            screen.blit(self.assets.background, (0, 0))
+        else:
+            screen.fill(self.layout.colors['background'])
+
+        self.draw_title(screen, self.layout.x_center, self.layout.title_y,"Select a song")
+
+        for button in self.buttons:
+            button.draw(screen)
+
+    def handle_input(self, event):
+        if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            for idx,button in enumerate(self.buttons):
+                if button.isOver(pos):
+                    return "START_GAME", self.songs[idx]['filename']
+        return None, None
+
+    def update_menu_ui(self, layout):
+        # Get new scaled ui guides
+        self.layout = layout 
+
 class MenuManager:
     def __init__(self,layout,mediator):
         self.layout = layout
         self.menu_assets = MenuAssets()
         self.menu_assets.load()
-
         mediator.set_menu(self)
 
         self.menus = {
-            "main": MainMenu(self.menu_assets),
+            "main": MainMenu(self.menu_assets,self.layout),
+            "song_select": SongSelectMenu(self.menu_assets,self.layout)
         }
 
         self.show_menu("main")
@@ -119,6 +174,8 @@ class MenuManager:
     def show_menu(self, menu_name):
         """Change reference of current_menu to a specified menu"""
         self.current_menu = self.menus[menu_name]
+        # Update UI on change in case it was changed in previous menu
+        self.current_menu.update_menu_ui(self.layout)
 
     def handle_input(self, event):
         """Handle input through the menus own function"""
@@ -139,7 +196,19 @@ class MenuManager:
                     pygame.quit()
                     sys.exit()
         return (None,None)
+
+    def draw(self, screen):
+        """Draw the menu through its own drawing function"""
+        if self.current_menu:
+            self.current_menu.draw(screen)
+
+    def update_manager_ui(self, layout):
+        # TODO this is clunky, we are updating ui in both manager and menus right now
+        self.layout = layout
+        self.current_menu.update_menu_ui(layout)
         
+
+
 # Simple run for testing new menu implementation
 def main():
     pygame.init()

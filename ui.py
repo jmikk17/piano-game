@@ -14,14 +14,14 @@ class Mediator:
         self.ui = ui 
 
     def notify(self,ui):
-            self.menu.handle_ui_event(ui)
+            self.menu.update_manager_ui(ui)
 
 class UIAuxil:
     def __init__(self, screen_width, screen_height, mediator):
         self.mediator = mediator
         self.colors = {
             'background': auxil.WHITE,
-            'selected': (200, 200, 255),
+            'selected': auxil.RED,
             'text': auxil.BLACK,
             'title': auxil.BLUE,
             'selected_text': auxil.BLUE,
@@ -88,7 +88,7 @@ class Button:
             y = self.y
         )
 
-    def draw(self, screen, outline=None):
+    def draw(self, screen):
         # Move this out and give as argument, if needed by anything else
         pos = pygame.mouse.get_pos()
 

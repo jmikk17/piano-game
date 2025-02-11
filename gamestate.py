@@ -3,13 +3,16 @@ from cfg import std_cfg
 from menu import MenuManager
 from game import Game
 import sys
+import ui
 
 ### TODO need to implement game before cleanup and reinitialize can be tested!
 # Structure of cleanup might be problematic if we dont load a frame of e.g. game before cleaning menu assets
 # Unless we always load with an "if asset:" statement, then we would just get a blank screen for 1 frame
 class GameStateManager:
     def __init__(self):
-        self.menu_manager = MenuManager()
+        mediator = ui.Mediator()
+        layout = ui.UIAuxil(std_cfg.SCREEN_WIDTH,std_cfg.SCREEN_HEIGHT,mediator)
+        self.menu_manager = MenuManager(layout,mediator)
         self.current_state = "MENU"
 
     def update(self,dt):
@@ -18,6 +21,7 @@ class GameStateManager:
 
         if self.current_state == "MENU":
             for event in pygame.event.get():
+                #if event.type == pygame.VIDEORESIZE:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     return
