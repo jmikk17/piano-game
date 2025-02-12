@@ -10,11 +10,13 @@ import test
 play_state = {key: False for key in auxil.keys}
 
 class Game:
-    def __init__(self,data):
+    def __init__(self,data,layout):
         self.assets = GameAssets()
         self.assets.load()
+        self.layout = layout
 
         # MOVE TO CFG?
+        # TODO standardize this with layout class for scaling of screen size
         self.lines = 5
         self.line_thick = 2
         self.line_gap = 20
@@ -31,6 +33,7 @@ class Game:
         # self.play_center = where we register hit
         # -5 = adjustment for center of note ish
 
+        # TODO test screen scaling with music timing etc.
         self.musicplayer = MusicPlayer(data,self.assets,self.play_center,self.play_width, self.play_b_delay)
 
         # sprite test!
@@ -51,7 +54,7 @@ class Game:
 
         self.musicplayer.draw(screen)
 
-        # function to print score here
+        # TODO function to print score here
 
         # sprite test!
         screen.blit(self.assets.trumpet[self.current_trumpet], (500, 500))
@@ -59,11 +62,17 @@ class Game:
 
     def update(self,dt):
         key_state = auxil.check_keyboard()
-        self.musicplayer.update(dt,key_state)
-        auxil.handle_quit() # this is not optimal, should be handled when we loop over events anyways
+        status = self.musicplayer.update(dt,key_state)
+        #auxil.handle_quit() # this is not optimal, should be handled when we loop over events anyways
 
         # sprite test!
         self.trumpet_time += dt
         if self.trumpet_time >= 0.1:
             self.trumpet_time = 0
             self.current_trumpet = (self.current_trumpet + 1) % len(self.assets.trumpet)
+
+        return status
+
+    def update_manager_ui(self, layout):
+        # TODO
+        print("Game ui update")

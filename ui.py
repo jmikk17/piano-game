@@ -4,21 +4,24 @@ import auxil
 
 class Mediator:
     def __init__(self):
-        self.menu = None
+        self.manager = None
         self.ui = None
 
-    def set_menu(self,menu):
-        self.menu = menu
+    def set_manager(self,manager):
+        self.manager = manager
 
     def set_ui(self,ui):
         self.ui = ui 
 
     def notify(self,ui):
-            self.menu.update_manager_ui(ui)
+        if self.manager:
+            self.manager.update_manager_ui(ui)
 
 class UIAuxil:
     def __init__(self, screen_width, screen_height, mediator):
         self.mediator = mediator
+        mediator.set_ui(self)
+
         self.colors = {
             'background': auxil.WHITE,
             'selected': auxil.RED,
@@ -28,6 +31,7 @@ class UIAuxil:
             'instructions': (100, 100, 100)
         }
 
+        # Set attributes, but dont mediate on construction 
         self.update_ui(screen_width, screen_height, False)
 
     def update_ui(self, screen_width, screen_height, mediate):

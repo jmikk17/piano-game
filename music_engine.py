@@ -2,6 +2,7 @@ import pygame
 from cfg import std_cfg
 import auxil
 import json
+import sys
 
 from resource_path import resource_path
 
@@ -172,29 +173,35 @@ class MusicPlayer:
         return False, 0  # No note hit
 
     def spawn_line(self):
+        # TODO
         pass
 
     def handle_input(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT: 
                 pygame.quit()
-                return
-            if event.type == pygame.KEYDOWN:
+                sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return "QUIT_TO_MENU"
                 if event.key == pygame.K_UP:
                     if self.octave < 6: self.octave += 1
                     print(self.octave)
                 if event.key == pygame.K_DOWN:
                     if self.octave > 5: self.octave -= 1
                     print(self.octave)
+        return None
 
     def draw(self,screen):
         for note in self.active_notes:
             screen.blit(note.image,note.rect)
+            # Red circle for debug
             pygame.draw.circle(screen, auxil.RED, (note.rect.centerx, note.rect.centery), 5)
 
     def update(self,dt,key_state):
-        self.handle_input()
+        status = self.handle_input()
         self.play_notes(key_state)
         self.check_note_spawn()
         self.check_line_spawn()
         self.update_notes(dt)
+        return status

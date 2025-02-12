@@ -9,12 +9,12 @@ def main():
 
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT),pygame.RESIZABLE)
     pygame.display.set_caption("Piano game")
     
     error.setup_logger()
     
-    manager = GameStateManager()
+    manager = GameStateManager(screen)
     clock = pygame.time.Clock()
     
     while True:
@@ -22,7 +22,7 @@ def main():
 
         manager.update(dt)    
             
-        manager.draw(screen)
+        manager.draw()
 
         auxil.display_fps(clock, screen)
         

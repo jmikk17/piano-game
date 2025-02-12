@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 game.log
 main.spec
+keybinds.json

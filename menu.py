@@ -107,6 +107,8 @@ class SongSelectMenu(BaseMenu):
         self.buttons = []
         self.load_available_songs()
 
+        self.back_button = ui.Button(self.layout.x_center,self.layout.content_end_y,
+                                     self.layout.colors['text'],self.layout.colors['selected'],"Back to main menu")
         self.scaled_background = None
     
     def load_available_songs(self):
@@ -145,9 +147,13 @@ class SongSelectMenu(BaseMenu):
         for button in self.buttons:
             button.draw(screen)
 
+        self.back_button.draw(screen)
+
     def handle_input(self, event):
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
+            if self.back_button.isOver(pos):
+                return "SHOW_MAIN_MENU", None
             for idx,button in enumerate(self.buttons):
                 if button.isOver(pos):
                     return "START_GAME", self.songs[idx]['filename']
@@ -156,13 +162,23 @@ class SongSelectMenu(BaseMenu):
     def update_menu_ui(self, layout):
         # Get new scaled ui guides
         self.layout = layout 
+        # Update buttons
+        button_y = self.layout.content_start_y
+        for i,button in enumerate(self.buttons):
+            button.update(self.layout.x_center, button_y)
+            button_y = self.buttons[i].rect.bottom + self.layout.pad_y
+
+        self.back_button.update(self.layout.x_center, self.layout.content_end_y)
+
+        # Scale background
+        self.scaled_background = pygame.transform.scale(self.assets.background, (self.layout.x_unit*100, self.layout.y_unit*100))
 
 class MenuManager:
     def __init__(self,layout,mediator):
         self.layout = layout
         self.menu_assets = MenuAssets()
         self.menu_assets.load()
-        mediator.set_menu(self)
+        mediator.set_manager(self)
 
         self.menus = {
             "main": MainMenu(self.menu_assets,self.layout),
