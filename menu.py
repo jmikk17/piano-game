@@ -101,6 +101,8 @@ class MainMenu(BaseMenu):
         self.scaled_background = pygame.transform.scale(self.assets.background, (self.layout.x_unit*100, self.layout.y_unit*100))
 
 class SongSelectMenu(BaseMenu):
+    # TODO add more info on song, and solution for if we have too many songs?
+    # + check if use of content_end for back_button is correct, and if we can use it to determine how many songs we can show
     def __init__(self, assets, layout):
         super().__init__(assets, layout)
         self.songs = []
