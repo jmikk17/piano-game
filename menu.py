@@ -80,10 +80,8 @@ class MainMenu(BaseMenu):
                         pygame.quit()
                         sys.exit()
                     elif button.text == "Play": 
-                        print(button.text)
                         return "SHOW_SONG_SELECT", None
                     elif button.text == "Options": 
-                        print(button.text)
                         return "SHOW_OPTIONS", None
         return None, None
 
@@ -159,11 +157,75 @@ class SongSelectMenu(BaseMenu):
             for idx,button in enumerate(self.buttons):
                 if button.isOver(pos):
                     return "START_GAME", self.songs[idx]['filename']
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                return "SHOW_MAIN_MENU", None
         return None, None
 
     def update_menu_ui(self, layout):
         # Get new scaled ui guides
         self.layout = layout 
+        # Update buttons
+        button_y = self.layout.content_start_y
+        for i,button in enumerate(self.buttons):
+            button.update(self.layout.x_center, button_y)
+            button_y = self.buttons[i].rect.bottom + self.layout.pad_y
+
+        self.back_button.update(self.layout.x_center, self.layout.content_end_y)
+
+        # Scale background
+        self.scaled_background = pygame.transform.scale(self.assets.background, (self.layout.x_unit*100, self.layout.y_unit*100))
+
+class OptionsMenu(BaseMenu):
+    def __init__(self, assets, layout):
+        super().__init__(assets, layout)
+        self.options = ["TO DO"]
+
+        self.scaled_background = None
+
+        self.buttons = []
+        button_y = self.layout.content_start_y
+        for idx,name in enumerate(self.options):
+            self.buttons.append(ui.Button(self.layout.x_center,button_y,
+                                          self.layout.colors['text'],self.layout.colors['selected'],name))
+            button_y = self.buttons[idx].rect.bottom + self.layout.pad_y
+
+        self.back_button = ui.Button(self.layout.x_center,self.layout.content_end_y,
+                                     self.layout.colors['text'],self.layout.colors['selected'],"Back to main menu")
+
+    def draw(self, screen):
+        if self.scaled_background:
+            screen.blit(self.scaled_background, (0, 0))
+        elif self.assets.background:
+            screen.blit(self.assets.background, (0, 0))
+        else:
+            screen.fill(self.layout.colors['background'])
+
+        self.draw_title(screen, self.layout.x_center, self.layout.title_y,"Options")
+
+        for button in self.buttons:
+            button.draw(screen)
+
+        self.back_button.draw(screen)
+        
+    def handle_input(self, event):
+        if event.type == pygame.MOUSEBUTTONUP:
+            pos = pygame.mouse.get_pos()
+            if self.back_button.isOver(pos):
+                return "SHOW_MAIN_MENU", None
+            for button in self.buttons:
+                if button.isOver(pos):
+                    if button.text == "TO DO":
+                        pass
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                return "SHOW_MAIN_MENU", None
+        return None, None
+
+    def update_menu_ui(self, layout):
+        # Get new scaled ui guides
+        self.layout = layout 
+
         # Update buttons
         button_y = self.layout.content_start_y
         for i,button in enumerate(self.buttons):
@@ -184,7 +246,8 @@ class MenuManager:
 
         self.menus = {
             "main": MainMenu(self.menu_assets,self.layout),
-            "song_select": SongSelectMenu(self.menu_assets,self.layout)
+            "song_select": SongSelectMenu(self.menu_assets,self.layout),
+            "options": OptionsMenu(self.menu_assets,self.layout)
         }
 
         self.show_menu("main")

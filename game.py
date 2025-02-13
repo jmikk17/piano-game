@@ -3,7 +3,6 @@ from cfg import std_cfg
 from assets import GameAssets
 from music_engine import MusicPlayer
 import auxil
-import test
 
 # Array for currently pressed notes
 # Maybe move this?
@@ -15,7 +14,10 @@ class Game:
         self.assets.load()
         self.layout = layout
 
-        # MOVE TO CFG?
+        self.scaled_background = None
+        if self.layout.x_unit*100 != std_cfg.SCREEN_WIDTH or self.layout.y_unit*100 != std_cfg.SCREEN_HEIGHT:
+            self.scaled_background = pygame.transform.scale(self.assets.background, (self.layout.x_unit*100, self.layout.y_unit*100))
+
         # TODO standardize this with layout class for scaling of screen size
         self.lines = 5
         self.line_thick = 2
@@ -41,10 +43,13 @@ class Game:
         self.current_trumpet = 0
 
     def draw(self,screen):
-        if self.assets.background:
+
+        if self.scaled_background:
+            screen.blit(self.scaled_background, (0, 0))
+        elif self.assets.background:
             screen.blit(self.assets.background, (0, 0))
         else:
-            screen.fill(auxil.WHITE)
+            screen.fill(self.layout.colors['background'])
 
         for i in range(self.lines):
             pygame.draw.line(screen, auxil.BLACK, 
@@ -72,7 +77,3 @@ class Game:
             self.current_trumpet = (self.current_trumpet + 1) % len(self.assets.trumpet)
 
         return status
-
-    def update_manager_ui(self, layout):
-        # TODO
-        print("Game ui update")

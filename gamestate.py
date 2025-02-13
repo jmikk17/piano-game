@@ -49,16 +49,17 @@ class GameStateManager:
     def handle_state_transition(self, action, data):
         if action == "START_GAME":
             # Transition from menu to game
-            width,height = self.screen.get_width(), self.screen.get_height()
-            self.screen = pygame.display.set_mode((width, height))
+            # TODO For now we force default size in game, since some of the layout is defined in absolute terms,
+            # can in later version be changed to size from menu as:
+            #width,height = self.screen.get_width(), self.screen.get_height()
+            #self.screen = pygame.display.set_mode((width, height))
+            self.screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT))
             self.current_state = "GAME"
             # Instance of game starts the internal clock, so we start a new "Game" when a song is picked
             self.game = Game(data,self.layout) 
-            self.mediator.set_manager(self.game)
         elif action == "RETURN_TO_MENU":
             # Transition from game to menu
             width,height = self.screen.get_width(), self.screen.get_height()
             self.screen = pygame.display.set_mode((width, height),pygame.RESIZABLE)
             self.current_state = "MENU"
-            self.mediator.set_manager(self.menu_manager)
             self.game = None
