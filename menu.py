@@ -288,36 +288,3 @@ class MenuManager:
         self.layout = layout
         self.current_menu.update_menu_ui(layout)
         
-
-
-# Simple run for testing new menu implementation
-def main():
-    pygame.init()
-    screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT),pygame.RESIZABLE)
-    mediator = ui.Mediator()
-    # UI called should be changed to get screen size when returning to menu from game
-    layout = ui.UIAuxil(std_cfg.SCREEN_WIDTH,std_cfg.SCREEN_HEIGHT,mediator)
-    menu_assets = MenuAssets()
-    menu_assets.load()
-    menu = MainMenu(menu_assets,layout,mediator)
-    while True:
-        menu.draw(screen)
-        for event in pygame.event.get():
-            menu.handle_input(event)
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            if event.type == pygame.VIDEORESIZE:
-                width, height = event.size
-                screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
-                layout.update_ui(width,height,True)
-            
-        pygame.display.flip()
-
-# TODO extend to MenuManager
-#   create mediator with manager instead, 
-#   and have the manager "handle_ui_event" call a menu function like the current handle_ui event.
-#   Or maybe create the mediator inside menumanager? And then make the notifier call all 3 menu updates?
-
-if __name__ == "__main__":
-    main()
