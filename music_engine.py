@@ -213,6 +213,8 @@ class MusicPlayer:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
+                    if self.b_playing:
+                        self.b_track.stop()
                     return "QUIT_TO_MENU"
                 if event.key == pygame.K_UP:
                     if self.octave < 6:

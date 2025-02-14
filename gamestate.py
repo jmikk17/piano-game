@@ -64,7 +64,7 @@ class GameStateManager:
             self.layout.update_ui(
                 std_cfg.SCREEN_WIDTH,
                 std_cfg.SCREEN_HEIGHT,
-                mediate=False,
+                mediate=True,
             )
             self.current_state = "GAME"
             # Instance of game starts the internal clock,
