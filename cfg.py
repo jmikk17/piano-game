@@ -1,4 +1,5 @@
-import logging
+import logging  # noqa: D100
+
 
 # Written as a class if need other configs in the future
 class Config:
@@ -21,12 +22,12 @@ class Config:
     PLAY_AREA_HEIGHT = 130
     PLAY_AREA_Y = 100
     HIT_WINDOW = 15
-    
+
     # Logging settings
     DEBUG_MODE = True
     LOG_FILE = "game.log"
-    LOG_FORMAT = '%(asctime)s - %(levelname)s - %(message)s'
-    LOG_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+    LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
+    LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
     if DEBUG_MODE:
         LOG_LEVEL = logging.DEBUG
         LOG_TO_CONSOLE = True
@@ -34,8 +35,9 @@ class Config:
         LOG_LEVEL = logging.ERROR
         LOG_TO_CONSOLE = False
 
+
 # The std_cfg instance is imported by all, so we could e.g. do:
 # if DEBUG_mode:
 #   std_cfg = Config_debug()
-# else: 
+# else:
 std_cfg = Config()
