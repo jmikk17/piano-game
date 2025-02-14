@@ -1,5 +1,3 @@
-### Second attempt on some cleaner menu code
-### Currently not called by anything, tested by run as main
 import pygame
 from cfg import std_cfg
 import auxil
