@@ -1,7 +1,4 @@
-build/
-__pycache__/
-*.pyc
+__pycache__
 game.log
 main.spec
 keybinds.json
-.vscode
