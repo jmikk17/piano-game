@@ -4,10 +4,12 @@ import pytest
 from src.cfg import std_cfg
 from src.gamestate import GameStateManager
 
+# Setup for a future testing framework, very useless in its current form
+
 
 @pytest.fixture(scope="session", autouse=True)
 def pygame_init():
-    """Initialize pygame before running any tests"""
+    """Initialize pygame before running any tests."""
     pygame.init()
     pygame.font.init()
     yield
@@ -39,6 +41,6 @@ def game_state_manager(mocker, mock_screen, mock_menu_manager):
 
 
 def test_init_state(game_state_manager):
-    """Test initial state of GameStateManager"""
+    """Test initial state of GameStateManager."""
     assert game_state_manager.current_state == "MENU"
     assert not hasattr(game_state_manager, "game") or game_state_manager.game is None
