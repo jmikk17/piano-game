@@ -1,4 +1,5 @@
-__pycache__
 game.log
 main.spec
 keybinds.json
+*.pyc
+.coverage

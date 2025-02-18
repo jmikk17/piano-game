@@ -1,8 +1,8 @@
 import pygame
 import pytest
 
-from cfg import std_cfg
-from gamestate import GameStateManager
+from src.cfg import std_cfg
+from src.gamestate import GameStateManager
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -33,7 +33,7 @@ def game_state_manager(mocker, mock_screen, mock_menu_manager):
     mocker.patch("pygame.display.set_mode", return_value=mock_screen)
 
     # Patch MenuManager
-    mocker.patch("menu.MenuManager", return_value=mock_menu_manager)
+    mocker.patch("src.menu.MenuManager", return_value=mock_menu_manager)
 
     return GameStateManager(mock_screen)
 
