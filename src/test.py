@@ -1,6 +1,8 @@
-# Feature testing, quick and unreliable implementations
 import pygame
-from auxil import WHITE, BLUE, get_sysfont, RED, GREEN
+
+from auxil import BLUE, GREEN, RED, WHITE, get_sysfont
+
+# Feature testing, quick and unreliable implementations
 
 
 def draw_score_display(screen, score, combo, max_combo=5, last_hit_type=None):

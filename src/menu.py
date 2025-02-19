@@ -1,15 +1,15 @@
-import pygame
-from cfg import std_cfg
-import auxil
 import json
-import error
 import os
-from abc import ABC, abstractmethod
-from assets import MenuAssets
 import sys
+from abc import ABC, abstractmethod
 
-# from ui import UILayout, Button
+import pygame
+
+import auxil
+import error
 import ui
+from assets import MenuAssets
+from cfg import std_cfg
 from resource_path import resource_path
 
 

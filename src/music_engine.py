@@ -1,9 +1,10 @@
-import pygame
-from cfg import std_cfg
-import auxil
 import json
 import sys
 
+import pygame
+
+import auxil
+from cfg import std_cfg
 from resource_path import resource_path
 
 

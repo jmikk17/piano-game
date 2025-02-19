@@ -1,4 +1,4 @@
-import pygame  # noqa: D100
+import pygame
 
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
