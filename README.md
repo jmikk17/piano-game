@@ -22,7 +22,7 @@ If you have Python installed, you can run the game directly (tested for python 3
    ```
 
 ## Controls
-# Key: note
+keyboard key: note
 - a: C
 - s: D
 - d: E
