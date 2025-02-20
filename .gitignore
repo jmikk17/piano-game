@@ -3,3 +3,5 @@ main.spec
 keybinds.json
 *.pyc
 .coverage
+build/
+dist/
