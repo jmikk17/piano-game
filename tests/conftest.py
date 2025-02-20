@@ -1,5 +1,8 @@
+import os
 import sys
 from pathlib import Path
+
+os.environ["SDL_AUDIODRIVER"] = "dummy"
 
 
 def setup_test_paths():
