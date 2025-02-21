@@ -7,16 +7,34 @@ from cfg import std_cfg
 from game import Game
 from menu import MenuManager
 
-# TODO integrate with asset loading/deloading
+# TODO(jmikk): integrate with asset loading/deloading
 
 
 class GameStateManager:
-    def __init__(self, screen) -> None:
+    """Manages the state transitions and updates for the game.
+
+    Attributes:
+        screen (pygame.Surface): The display surface for the game.
+        mediator (ui.Mediator): Mediator for UI interactions.
+        layout (ui.UIAuxil): Layout manager for UI components.
+        menu_manager (MenuManager): Manager for handling menu interactions.
+        current_state (str): The current state of the game ("MENU" or "GAME").
+        game (Game, optional): Instance of the game, initialized when transitioning to the game state.
+
+    Methods:
+        update(dt: float) -> None:
+            Updates the current state based on user input and elapsed time.
+        draw() -> None:
+            Draws the current state to the screen.
+        handle_state_transition(action: str, data: Any) -> None:
+            Handles transitions between different game states.
+
+    """
+
+    def __init__(self, screen: pygame.Surface) -> None:
         self.screen = screen
         self.mediator = ui.Mediator()
-        self.layout = ui.UIAuxil(
-            std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT, self.mediator
-        )
+        self.layout = ui.UIAuxil(std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT, self.mediator)
         self.menu_manager = MenuManager(self.layout, self.mediator)
         self.current_state = "MENU"
 
@@ -29,7 +47,8 @@ class GameStateManager:
                     width = max(width, std_cfg.SCREEN_WIDTH)
                     height = max(height, std_cfg.SCREEN_HEIGHT)
                     self.screen = pygame.display.set_mode(
-                        (width, height), pygame.RESIZABLE
+                        (width, height),
+                        pygame.RESIZABLE,
                     )
                     self.layout.update_ui(width, height, mediate=True)
                 if event.type == pygame.QUIT:
@@ -45,27 +64,21 @@ class GameStateManager:
             if game_status == "QUIT_TO_MENU":
                 self.handle_state_transition("RETURN_TO_MENU", None)
 
-    def draw(self):
+    def draw(self) -> None:
         if self.current_state == "MENU":
             self.menu_manager.draw(self.screen)
         elif self.current_state == "GAME":
             self.game.draw(self.screen)
 
-    def handle_state_transition(self, action, data):
+    def handle_state_transition(self, action, data) -> None:
         if action == "START_GAME":
             # Transition from menu to game
-            # TODO For now we force default size in game, since some of the layout is defined in absolute terms,
+            # TODO(jmikk) For now we force default size in game, since some of the layout is defined in absolute terms,
             # can in later version be changed to size from menu as:
             # width,height = self.screen.get_width(), self.screen.get_height()
             # self.screen = pygame.display.set_mode((width, height))
-            self.screen = pygame.display.set_mode(
-                (std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT),
-            )
-            self.layout.update_ui(
-                std_cfg.SCREEN_WIDTH,
-                std_cfg.SCREEN_HEIGHT,
-                mediate=True,
-            )
+            self.screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT))
+            self.layout.update_ui(std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT, mediate=True)
             self.current_state = "GAME"
             # Instance of game starts the internal clock,
             # so we start a new "Game" when a song is picked

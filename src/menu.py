@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import json
 import os
 import sys
@@ -14,41 +16,52 @@ from resource_path import resource_path
 
 
 class BaseMenu(ABC):
-    def __init__(self, assets, layout):
+    """Base class for all menu screens."""
+
+    def __init__(self, assets: MenuAssets, layout: ui.UIAuxil) -> None:
+        """Initialize the base menu.
+
+        :param assets: MenuAssets object containing the assets for the menu.
+        :param layout: Layout object containing the layout configuration for the menu.
+        """
         self.font = auxil.get_sysfont(std_cfg.FONT, 36)
         self.title_font = auxil.get_sysfont(std_cfg.FONT, 48)
-        # TODO should be changed so all children refer to same ui guidelines, so we only need to update one
-        # self.layout = UILayout(std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT)
         self.layout = layout
         self.assets = assets
 
     @abstractmethod
-    def draw(self, screen):
-        pass
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the menu on the given screen."""
 
     @abstractmethod
-    def handle_input(self, event):
-        pass
+    def handle_input(self, event: pygame.event.Event) -> None | tuple:
+        """Handle input for menu buttons on the given screen."""
 
     @abstractmethod
-    def update_menu_ui(self, layout):
-        pass
+    def update_menu_ui(self, layout: ui.UIAuxil) -> None:
+        """Update the menu UI based on the given layout configuration."""
 
-    def draw_title(self, screen, x_pos, y_pos, title):
-        """Draws title of selected menu"""
+    def draw_title(self, screen: pygame.Surface, x_pos: float, y_pos: float, title: str) -> None:
+        """Draws title of selected menu."""
         # Can be made abstract later if we need different titles
-        title_surface = self.title_font.render(title, True, self.layout.colors["title"])
+        title_surface = self.title_font.render(title, std_cfg.ANTIALIAS, self.layout.colors["title"])
         title_rect = title_surface.get_rect(centerx=x_pos, y=y_pos)
         screen.blit(title_surface, title_rect)
 
 
 class MainMenu(BaseMenu):
-    def __init__(self, assets, layout):
+    """Class for main menu screen."""
+
+    def __init__(self, assets: MenuAssets, layout: ui.UIAuxil) -> None:
+        """Initialize the menu.
+
+        :param assets: MenuAssets object containing the assets for the menu.
+        :param layout: Layout object containing the layout configuration for the menu.
+        """
         super().__init__(assets, layout)
+
         self.options = ["Play", "Options", "Exit"]
-
         self.scaled_background = None
-
         self.buttons = []
         button_y = self.layout.content_start_y
         for idx, name in enumerate(self.options):
@@ -59,7 +72,7 @@ class MainMenu(BaseMenu):
                     self.layout.colors["text"],
                     self.layout.colors["selected"],
                     name,
-                )
+                ),
             )
             button_y = self.buttons[idx].rect.bottom + self.layout.pad_y
 
@@ -164,16 +177,14 @@ class SongSelectMenu(BaseMenu):
         else:
             screen.fill(self.layout.colors["background"])
 
-        self.draw_title(
-            screen, self.layout.x_center, self.layout.title_y, "Select a song"
-        )
+        self.draw_title(screen, self.layout.x_center, self.layout.title_y, "Select a song")
 
         for button in self.buttons:
             button.draw(screen)
 
         self.back_button.draw(screen)
 
-    def handle_input(self, event):
+    def handle_input(self, event) -> tuple:
         if event.type == pygame.MOUSEBUTTONUP:
             pos = pygame.mouse.get_pos()
             if self.back_button.isOver(pos):
@@ -275,12 +286,38 @@ class OptionsMenu(BaseMenu):
 
         # Scale background
         self.scaled_background = pygame.transform.scale(
-            self.assets.background, (self.layout.x_unit * 100, self.layout.y_unit * 100)
+            self.assets.background,
+            (self.layout.x_unit * 100, self.layout.y_unit * 100),
         )
 
 
 class MenuManager:
-    def __init__(self, layout, mediator):
+    """Manages the different menus in the game.
+
+    Attributes:
+        layout (ui.UIAuxil): The layout guidelines for the menus.
+        menu_assets (MenuAssets): The assets used by the menus.
+        menus (dict): A dictionary containing the different menus.
+        current_menu (Menu): The currently active menu.
+
+    Methods:
+        show_menu(menu_name):
+            Change reference of current_menu to a specified menu.
+        handle_input(event):
+            Handle input through the current menu's own function.
+        draw(screen):
+            Draw the current menu through its own drawing function.
+        update_manager_ui(layout):
+            Update the UI layout in the manager and the current menu.
+
+    """
+
+    def __init__(self, layout: ui.UIAuxil, mediator: ui.Mediator) -> None:
+        """Initialize the menu.
+
+        :param layout: Layout object containing the layout configuration for the menu.
+        :param mediator: Mediator object for handling change in UI Layout.
+        """
         self.layout = layout
         self.menu_assets = MenuAssets()
         self.menu_assets.load()
@@ -294,8 +331,8 @@ class MenuManager:
 
         self.show_menu("main")
 
-    def show_menu(self, menu_name):
-        """Change reference of current_menu to a specified menu"""
+    def show_menu(self, menu_name: str) -> None:
+        """Change reference of current_menu to a specified menu."""
         self.current_menu = self.menus[menu_name]
         # Update UI on change in case it was changed in previous menu
         self.current_menu.update_menu_ui(self.layout)
@@ -325,7 +362,7 @@ class MenuManager:
         if self.current_menu:
             self.current_menu.draw(screen)
 
-    def update_manager_ui(self, layout):
+    def update_manager_ui(self, layout: ui.UIAuxil) -> None:
         # TODO this is clunky, we are updating ui in both manager and menus right now
         self.layout = layout
         self.current_menu.update_menu_ui(layout)

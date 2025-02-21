@@ -23,6 +23,8 @@ class Config:
     PLAY_AREA_Y = 100
     HIT_WINDOW = 15
 
+    ANTIALIAS = True
+
     # Logging settings
     DEBUG_MODE = True
     LOG_FILE = "game.log"

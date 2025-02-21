@@ -5,10 +5,6 @@ from assets import GameAssets
 from cfg import std_cfg
 from music_engine import MusicPlayer
 
-# Array for currently pressed notes
-# Maybe move this?
-play_state = {key: False for key in auxil.keys}
-
 
 class Game:
     def __init__(self, data, layout):
@@ -17,10 +13,7 @@ class Game:
         self.layout = layout
 
         self.scaled_background = None
-        if (
-            self.layout.x_unit * 100 != std_cfg.SCREEN_WIDTH
-            or self.layout.y_unit * 100 != std_cfg.SCREEN_HEIGHT
-        ):
+        if self.layout.x_unit * 100 != std_cfg.SCREEN_WIDTH or self.layout.y_unit * 100 != std_cfg.SCREEN_HEIGHT:
             self.scaled_background = pygame.transform.scale(
                 self.assets.background,
                 (self.layout.x_unit * 100, self.layout.y_unit * 100),
@@ -44,9 +37,7 @@ class Game:
         # -5 = adjustment for center of note ish
 
         # TODO test screen scaling with music timing etc.
-        self.musicplayer = MusicPlayer(
-            data, self.assets, self.play_center, self.play_width, self.play_b_delay
-        )
+        self.musicplayer = MusicPlayer(data, self.assets, self.play_center, self.play_width, self.play_b_delay)
 
         # sprite test!
         self.trumpet_time = 0
@@ -69,9 +60,7 @@ class Game:
                 self.line_thick,
             )
         screen.blit(self.assets.note_pictures["g"], (200, 74))
-        self.play_box = pygame.draw.rect(
-            screen, (0, 255, 0), self.play_box
-        )  # x,y,width,height
+        self.play_box = pygame.draw.rect(screen, (0, 255, 0), self.play_box)  # x,y,width,height
 
         self.musicplayer.draw(screen)
 
@@ -83,7 +72,6 @@ class Game:
     def update(self, dt):
         key_state = auxil.check_keyboard()
         status = self.musicplayer.update(dt, key_state)
-        # auxil.handle_quit() # this is not optimal, should be handled when we loop over events anyways
 
         # sprite test!
         self.trumpet_time += dt

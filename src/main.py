@@ -7,12 +7,20 @@ from gamestate import GameStateManager
 
 
 def main() -> None:
+    """Initialize the game and run the main game loop.
+
+    This function sets up the game by initializing Pygame, creating the game window,
+    setting up the logger, and initializing the game state manager. It then enters
+    an infinite loop where it updates the game state, draws the game screen, displays
+    the frames per second (FPS), and updates the display.
+
+    Returns:
+        None.
+
+    """
     pygame.init()
     pygame.mixer.init()
-    screen = pygame.display.set_mode(
-        (std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT),
-        pygame.RESIZABLE,
-    )
+    screen = pygame.display.set_mode((std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("Piano game")
 
     error.setup_logger()

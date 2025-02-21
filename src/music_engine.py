@@ -25,9 +25,7 @@ class Note:
 
 
 class Song:
-    def __init__(
-        self, bpm=std_cfg.BPM, slots_per_bar=std_cfg.SLOTS_PER_BAR, b_path=None
-    ):
+    def __init__(self, bpm=std_cfg.BPM, slots_per_bar=std_cfg.SLOTS_PER_BAR, b_path=None):
         self.bpm = bpm
         self.slots_per_bar = slots_per_bar
         self.notes = []
@@ -71,9 +69,7 @@ class MusicPlayer:
         self.play_b_time = play_b_time
 
         if self.song.b_path:
-            self.b_track = pygame.mixer.Sound(
-                resource_path("audio/" + self.song.b_path)
-            )
+            self.b_track = pygame.mixer.Sound(resource_path("audio/" + self.song.b_path))
         self.b_playing = False
 
         self.play_state = {key: False for key in auxil.keys}
@@ -83,9 +79,7 @@ class MusicPlayer:
 
         self.current_slot = -1
         self.current_bar = 0
-        self.time_per_slot = 60 / (
-            self.song.bpm * self.song.slots_per_bar / std_cfg.BEATS_PER_BAR
-        )  # Seconds per slot
+        self.time_per_slot = 60 / (self.song.bpm * self.song.slots_per_bar / std_cfg.BEATS_PER_BAR)  # Seconds per slot
         print(self.time_per_slot)
         self.start_time = pygame.time.get_ticks() / 1000.0  # Current time in seconds
         self.last_update_time = self.start_time
@@ -102,9 +96,7 @@ class MusicPlayer:
             print(self.current_slot, self.current_bar)
             self.last_update_time += self.time_per_slot
             self.spawn_notes()
-        if self.song.b_path and (
-            current_time - self.start_time >= self.play_b_time and not self.b_playing
-        ):
+        if self.song.b_path and (current_time - self.start_time >= self.play_b_time and not self.b_playing):
             self.b_playing = True
             self.b_track.play()
 
@@ -121,25 +113,17 @@ class MusicPlayer:
             self.line_spawned = False
 
     def spawn_notes(self) -> None:
-        notes = self.song.get_notes_for_time(
-            self.current_bar + 1, self.current_slot + 1
-        )
+        notes = self.song.get_notes_for_time(self.current_bar + 1, self.current_slot + 1)
         for note in notes:
             if note.active is False:
                 if note.pitch > 6:
                     # could potentially move this to init of a note
                     # at least image, so we can preprocess line/noline and transform
-                    note.image = pygame.transform.flip(
-                        self.assets.note_pictures[str(note.note_type)], True, True
-                    )
-                    note.rect = note.image.get_rect(
-                        center=(1200, 260 - note.pitch * 10)
-                    )
+                    note.image = pygame.transform.flip(self.assets.note_pictures[str(note.note_type)], True, True)
+                    note.rect = note.image.get_rect(center=(1200, 260 - note.pitch * 10))
                 else:
                     note.image = self.assets.note_pictures[str(note.note_type)]
-                    note.rect = note.image.get_rect(
-                        center=(1200, 180 - note.pitch * 10)
-                    )
+                    note.rect = note.image.get_rect(center=(1200, 180 - note.pitch * 10))
                 note.active = True
                 self.active_notes.append(note)
 
@@ -181,9 +165,7 @@ class MusicPlayer:
                 auxil.key_dictionary[note.pitch % 7] == key
                 and
                 # self.play_center - self.play_margain <= note.rect.centerx-5 <= self.play_center + self.play_margain):
-                self.play_center - self.play_margain
-                <= note.rect.centerx
-                <= self.play_center + self.play_margain
+                self.play_center - self.play_margain <= note.rect.centerx <= self.play_center + self.play_margain
             ):
                 # -5 is manual adjustment for pictures, probalby doesnt scale well?
 
@@ -230,10 +212,9 @@ class MusicPlayer:
     def draw(self, screen):
         for note in self.active_notes:
             screen.blit(note.image, note.rect)
-            # Red circle for debug
-            pygame.draw.circle(
-                screen, auxil.RED, (note.rect.centerx, note.rect.centery), 5
-            )
+            if std_cfg.DEBUG_MODE:
+                # Red circle for debug
+                pygame.draw.circle(screen, auxil.RED, (note.rect.centerx, note.rect.centery), 5)
 
     def update(self, dt, key_state):
         status = self.handle_input()

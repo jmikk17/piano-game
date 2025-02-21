@@ -1,5 +1,6 @@
 import pygame
 import pytest
+from pytest_mock import MockerFixture
 
 from src.cfg import std_cfg
 from src.gamestate import GameStateManager
@@ -17,7 +18,7 @@ def pygame_init():
 
 
 @pytest.fixture
-def mock_screen(mocker):
+def mock_screen(mocker: MockerFixture):
     screen = mocker.MagicMock()
     screen.get_width.return_value = std_cfg.SCREEN_WIDTH
     screen.get_height.return_value = std_cfg.SCREEN_HEIGHT
