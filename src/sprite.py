@@ -4,7 +4,12 @@ import pygame
 
 
 class SpriteManager:
-    """A class that manages the loading of sprites."""
+    """A class that manages the loading of sprites.
+
+    Todo:
+        * Integrate with actual use of sprites
+
+    """
 
     def __init__(self) -> None:
         """Initialize the SpriteManager."""

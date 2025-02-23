@@ -11,8 +11,7 @@ def main() -> None:
 
     This function sets up the game by initializing Pygame, creating the game window,
     setting up the logger, and initializing the game state manager. It then enters
-    an infinite loop where it updates the game state, draws the game screen, displays
-    the frames per second (FPS), and updates the display.
+    an infinite loop where it updates the game state, draws the game screen, and updates the display.
 
     """
     pygame.init()
