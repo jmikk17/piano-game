@@ -1,3 +1,7 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pygame
 
 import auxil
@@ -5,9 +9,47 @@ from assets import GameAssets
 from cfg import std_cfg
 from music_engine import MusicPlayer
 
+if TYPE_CHECKING:
+    import ui
+
 
 class Game:
-    def __init__(self, data, layout):
+    """Class for the game state.
+
+    This class draws the static part of the music player, and initialize and updates the music player.
+
+    Attributes:
+        assets (GameAssets): The assets used in the game.
+        layout (UIAuxil): The layout guidelines for the game.
+        scaled_background (pygame.Surface, optional): The background image scaled to the screen size.
+        lines (int): The number of lines on the screen.
+        line_thick (int): The thickness of the lines.
+        line_gap (int): The gap between the lines.
+        line_lower (int): The y-coordinate of the lower line.
+        line_left (int): The x-coordinate of the left line.
+        line_right (int): The x-coordinate of the right line.
+        play_box (tuple): The rectangle for the play area.
+        play_width (int): The width of the play area.
+        play_center (int): The center of the play area.
+        play_b_delay (int): The delay for the play area.
+        musicplayer (MusicPlayer): The music player for the game.
+        trumpet_time (float): The time for the trumpet sprite.
+        current_trumpet (int): The current trumpet sprite.
+
+    Todo:
+        * Standardize the screen layout from the layout class instead of hardcoded values.
+        * Make seperate class for handling sprites.
+
+    """
+
+    def __init__(self, data: str, layout: ui.UIAuxil) -> None:
+        """Initialize the Game class.
+
+        Args:
+            data (str): The file path for the song selected.
+            layout (UIAuxil): The layout guidelines for the game.
+
+        """
         self.assets = GameAssets()
         self.assets.load()
         self.layout = layout
@@ -19,7 +61,6 @@ class Game:
                 (self.layout.x_unit * 100, self.layout.y_unit * 100),
             )
 
-        # TODO standardize this with layout class for scaling of screen size
         self.lines = 5
         self.line_thick = 2
         self.line_gap = 20
@@ -36,14 +77,19 @@ class Game:
         # self.play_center = where we register hit
         # -5 = adjustment for center of note ish
 
-        # TODO test screen scaling with music timing etc.
         self.musicplayer = MusicPlayer(data, self.assets, self.play_center, self.play_width, self.play_b_delay)
 
         # sprite test!
         self.trumpet_time = 0
         self.current_trumpet = 0
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the background, static part of the music player, and the spite(s).
+
+        Args:
+            screen (pygame.Surface): The display surface for the game.
+
+        """
         if self.scaled_background:
             screen.blit(self.scaled_background, (0, 0))
         elif self.assets.background:
@@ -64,19 +110,26 @@ class Game:
 
         self.musicplayer.draw(screen)
 
-        # TODO function to print score here
-
         # sprite test!
-        screen.blit(self.assets.trumpet[self.current_trumpet], (500, 500))
+        screen.blit(self.assets.trumpet.frames[self.current_trumpet], (500, 500))
 
-    def update(self, dt):
+    def update(self, dt: float) -> str | None:
+        """Update the music player and the sprite(s).
+
+        Args:
+            dt (float): Time passed since last frame in seconds.
+
+        Returns:
+            str: Return a string with "QUIT_TO_MENU" if the game should return to the menu.
+
+        """
         key_state = auxil.check_keyboard()
         status = self.musicplayer.update(dt, key_state)
 
         # sprite test!
         self.trumpet_time += dt
-        if self.trumpet_time >= 0.1:
+        if self.trumpet_time >= self.assets.trumpet.frame_time:
             self.trumpet_time = 0
-            self.current_trumpet = (self.current_trumpet + 1) % len(self.assets.trumpet)
+            self.current_trumpet = (self.current_trumpet + 1) % self.assets.trumpet.nframes
 
         return status

@@ -14,9 +14,6 @@ def main() -> None:
     an infinite loop where it updates the game state, draws the game screen, displays
     the frames per second (FPS), and updates the display.
 
-    Returns:
-        None.
-
     """
     pygame.init()
     pygame.mixer.init()

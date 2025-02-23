@@ -1,11 +1,11 @@
-import pygame  # noqa: D100
+import pygame
 
 import auxil
 import error
-import test
 from resource_path import resource_path
+from sprite import Sprite
 
-# Need to initilize mixer before we can load in sound
+# Need to initilize mixer before we can load sound
 pygame.mixer.init()
 
 
@@ -15,9 +15,7 @@ class MenuAssets:
 
     def load(self):
         try:
-            self.background = pygame.image.load(
-                resource_path("graphics/menu/background.png")
-            )
+            self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
         except (pygame.error, FileNotFoundError):
             error.handle_error("Menu background img not found", "not_fatal")
             self.background = pygame.Surface((1280, 720))
@@ -37,12 +35,11 @@ class GameAssets:
 
     def load(self):
         try:
-            self.trumpet = test.cut_sprite_sheet(
-                resource_path("graphics/trumpet.png"), 32, 32
-            )
-            self.background = pygame.image.load(
-                resource_path("graphics/menu/background.png")
-            )
+            self.trumpet = Sprite(resource_path("graphics/trumpet.png"), 32, 32, 0.1)
+        except (pygame.error, FileNotFoundError):
+            print("Trumpet sprite not found")
+        try:
+            self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
             self.note_sounds_5 = {
                 pygame.K_a: pygame.mixer.Sound(resource_path("audio/c5.ogg")),
                 pygame.K_s: pygame.mixer.Sound(resource_path("audio/d5.ogg")),
@@ -63,41 +60,29 @@ class GameAssets:
             }
             self.note_pictures_help = {
                 "4": pygame.transform.scale(
-                    pygame.image.load(
-                        resource_path("graphics/quarter.png")
-                    ).convert_alpha(),
+                    pygame.image.load(resource_path("graphics/quarter.png")).convert_alpha(),
                     (172, 172),
                 ),
                 "8": pygame.transform.scale(
-                    pygame.image.load(
-                        resource_path("graphics/half.png")
-                    ).convert_alpha(),
+                    pygame.image.load(resource_path("graphics/half.png")).convert_alpha(),
                     (172, 172),
                 ),
                 "16": pygame.transform.scale(
-                    pygame.image.load(
-                        resource_path("graphics/whole.png")
-                    ).convert_alpha(),
+                    pygame.image.load(resource_path("graphics/whole.png")).convert_alpha(),
                     (172, 172),
                 ),
             }
             self.note_pictures = {
                 "4": pygame.transform.scale(
-                    pygame.image.load(
-                        resource_path("graphics/quarter2.png")
-                    ).convert_alpha(),
+                    pygame.image.load(resource_path("graphics/quarter2.png")).convert_alpha(),
                     (172, 172),
                 ),
                 "8": pygame.transform.scale(
-                    pygame.image.load(
-                        resource_path("graphics/half2.png")
-                    ).convert_alpha(),
+                    pygame.image.load(resource_path("graphics/half2.png")).convert_alpha(),
                     (172, 172),
                 ),
                 "16": pygame.transform.scale(
-                    pygame.image.load(
-                        resource_path("graphics/whole2.png")
-                    ).convert_alpha(),
+                    pygame.image.load(resource_path("graphics/whole2.png")).convert_alpha(),
                     (172, 172),
                 ),
                 "g": pygame.transform.scale(

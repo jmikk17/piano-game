@@ -63,3 +63,37 @@ def check_keyboard():
     for key in keys:
         key_state[key] = pressed_keys[key]
     return key_state
+
+
+def cut_sprite_sheet(sheet_path: str, sprite_width: int, sprite_height: int) -> list:
+    """Cut a sprite sheet into individual frames.
+
+    Args:
+        sheet_path (str): Path to the sprite sheet image
+        sprite_width (int): Width of each individual sprite
+        sprite_height (int): Height of each individual sprite
+
+    Returns:
+        list: List of pygame Surface objects, each containing one frame
+
+    Todo:
+        * Rewrite this as a class.
+
+    """
+    sheet = pygame.image.load(sheet_path).convert_alpha()
+
+    # Calculate number of sprites in the sheet
+    sheet_width = sheet.get_width()
+    sheet_height = sheet.get_height()
+    num_sprites_x = sheet_width // sprite_width
+    num_sprites_y = sheet_height // sprite_height
+
+    # Cut the sheet into individual frames and store in a list
+    frames = []
+    for j in range(num_sprites_y):
+        for i in range(num_sprites_x):
+            rect = pygame.Rect(i * sprite_width, j * sprite_height, sprite_width, sprite_height)
+            frame = sheet.subsurface(rect)
+            frames.append(frame)
+
+    return frames
