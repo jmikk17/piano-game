@@ -54,12 +54,12 @@ class GameAssets:
             }
             self.note_sounds_6 = {
                 pygame.K_a: pygame.mixer.Sound(resource_path("audio/c6.ogg")),
-                pygame.K_s: pygame.mixer.Sound(resource_path("audio/c6.ogg")),
-                pygame.K_d: pygame.mixer.Sound(resource_path("audio/c6.ogg")),
-                pygame.K_f: pygame.mixer.Sound(resource_path("audio/c6.ogg")),
-                pygame.K_g: pygame.mixer.Sound(resource_path("audio/c6.ogg")),
-                pygame.K_h: pygame.mixer.Sound(resource_path("audio/c6.ogg")),
-                pygame.K_j: pygame.mixer.Sound(resource_path("audio/c6.ogg")),
+                pygame.K_s: pygame.mixer.Sound(resource_path("audio/d6.ogg")),
+                pygame.K_d: pygame.mixer.Sound(resource_path("audio/e6.ogg")),
+                pygame.K_f: pygame.mixer.Sound(resource_path("audio/f6.ogg")),
+                pygame.K_g: pygame.mixer.Sound(resource_path("audio/g6.ogg")),
+                pygame.K_h: pygame.mixer.Sound(resource_path("audio/a6.ogg")),
+                pygame.K_j: pygame.mixer.Sound(resource_path("audio/b6.ogg")),
             }
             self.note_pictures_help = {
                 "4": pygame.transform.scale(
