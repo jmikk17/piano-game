@@ -2,44 +2,79 @@ from __future__ import annotations
 
 import pygame
 
+import error
+
 
 class SpriteManager:
-    """A class that manages the loading of sprites.
-
-    Todo:
-        * Integrate with actual use of sprites
-
-    """
+    """A class that manages the loading of sprites."""
 
     def __init__(self) -> None:
         """Initialize the SpriteManager."""
         self.sprites = {}
+        self.sprite_clock = 0
 
     def add_sprite(
         self,
         name: str,
-        sheet_path: str,
-        sprite_width: int,
-        sprite_height: int,
-        frame_time: float | None = None,
+        sprite: Sprite,
+        update_interval: float = 0.1,
+        pos: tuple[float | int, float | int] = (0, 0),
     ) -> None:
         """Add a sprite to the SpriteManager.
 
         Args:
-            name (str): Name of the sprite.
-            sheet_path (str): File path to the sprite sheet.
-            sprite_width (int): Width of individual sprite.
-            sprite_height (int): Height of individual sprite.
-            frame_time (float): Frame time for sprite loop in seconds, default is None.
+            sprite (Sprite): The sprite object to add.
+            update_interval (float): Frame time for sprite loop in seconds, default is 0.1 seconds.
+            pos (tuple[float | int, float | int]): The position of the sprite.
 
         """
-        self.sprites[name] = Sprite(sheet_path, sprite_width, sprite_height, frame_time)
+        if name in self.sprites:
+            error.handle_error("Two sprites with same name", "fatal")
+        self.sprites[name] = {
+            "sprite": sprite,
+            "interval": update_interval,
+            "last_update": 0,
+            "position": pos,
+        }
+
+    def update(self, dt: float) -> None:
+        """Update the sprite clock.
+
+        Args:
+            dt (float): Time passed since last frame in seconds.
+
+        """
+        self.sprite_clock += dt
+
+        for sprite_info_dict in self.sprites.values():
+            # Key is sprite, and value is sprite_info_dict containing interval and last_update
+            if self.sprite_clock - sprite_info_dict["last_update"] > sprite_info_dict["interval"]:
+                sprite_info_dict["sprite"].update()
+                sprite_info_dict["last_update"] = self.sprite_clock
+
+    def change_position(self, name: str, pos: tuple[float | int, float | int]) -> None:
+        """Change the position of a sprite.
+
+        Args:
+            name (str): The name of the sprite to change the position of.
+            sprite (Sprite): The sprite object to change the position of.
+            pos (tuple[float | int, float | int]): The new position of the sprite.
+
+        """
+        if name in self.sprites:
+            self.sprites[name]["position"] = pos
+
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw all sprites on the screen."""
+        for sprite_info_dict in self.sprites.values():
+            sprite = sprite_info_dict["sprite"]
+            screen.blit(sprite.frames[sprite.current_frame], sprite_info_dict["position"])
 
 
 class Sprite:
     """A class that load a sprite sheet and stores it in frames."""
 
-    def __init__(self, sheet_path: str, sprite_width: int, sprite_height: int, frame_time: float | None = None) -> None:
+    def __init__(self, sheet_path: str, sprite_width: int, sprite_height: int) -> None:
         """Initialize the Sprite by loading the sheet and cutting it into frames.
 
         Args:
@@ -49,10 +84,10 @@ class Sprite:
             frame_time (float): Frame time for sprite loop in seconds, default is None.
 
         """
+        self.current_frame = 0
         self.sheet_path = sheet_path
         self.sprite_width = sprite_width
         self.sprite_height = sprite_height
-        self.frame_time = frame_time
 
         sheet = pygame.image.load(sheet_path).convert_alpha()
 
@@ -70,3 +105,7 @@ class Sprite:
                 self.frames.append(frame)
 
         self.nframes = len(self.frames)
+
+    def update(self) -> None:
+        """Update the current frame."""
+        self.current_frame = (self.current_frame + 1) % self.nframes

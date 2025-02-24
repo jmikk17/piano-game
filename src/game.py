@@ -80,8 +80,7 @@ class Game:
         self.musicplayer = MusicPlayer(data, self.assets, self.play_center, self.play_width, self.play_b_delay)
 
         # sprite test!
-        self.trumpet_time = 0
-        self.current_trumpet = 0
+        self.assets.sprite_manager.change_position("trumpet", (500, 500))
 
     def draw(self, screen: pygame.Surface) -> None:
         """Draw the background, static part of the music player, and the spite(s).
@@ -110,8 +109,7 @@ class Game:
 
         self.musicplayer.draw(screen)
 
-        # sprite test!
-        screen.blit(self.assets.trumpet.frames[self.current_trumpet], (500, 500))
+        self.assets.sprite_manager.draw(screen)
 
     def update(self, dt: float) -> str | None:
         """Update the music player and the sprite(s).
@@ -127,9 +125,6 @@ class Game:
         status = self.musicplayer.update(dt, key_state)
 
         # sprite test!
-        self.trumpet_time += dt
-        if self.trumpet_time >= self.assets.trumpet.frame_time:
-            self.trumpet_time = 0
-            self.current_trumpet = (self.current_trumpet + 1) % self.assets.trumpet.nframes
+        self.assets.sprite_manager.update(dt)
 
         return status

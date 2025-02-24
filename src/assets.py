@@ -3,7 +3,7 @@ import pygame
 import auxil
 import error
 from resource_path import resource_path
-from sprite import Sprite
+from sprite import Sprite, SpriteManager
 
 # Need to initilize mixer before we can load sound
 pygame.mixer.init()
@@ -28,14 +28,17 @@ class MenuAssets:
 
 class GameAssets:
     def __init__(self):
+        self.sprite_manager = SpriteManager()
+
         self.background = None
-        self.trumpet = None
         self.note_sounds_5 = None
         self.note_sounds_6 = None
 
     def load(self):
         try:
-            self.trumpet = Sprite(resource_path("graphics/trumpet.png"), 32, 32, 0.1)
+            # The asset manager doesn't know about UI, so we add sprites with default position and change later
+            trumpet_sprite = Sprite(resource_path("graphics/trumpet.png"), 32, 32)
+            self.sprite_manager.add_sprite("trumpet", trumpet_sprite, 0.1)
         except (pygame.error, FileNotFoundError):
             print("Trumpet sprite not found")
         try:
