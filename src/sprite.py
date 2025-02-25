@@ -23,13 +23,14 @@ class SpriteManager:
         """Add a sprite to the SpriteManager.
 
         Args:
+            name (str): The name of the sprite to add, used as id for other functions.
             sprite (Sprite): The sprite object to add.
             update_interval (float): Frame time for sprite loop in seconds, default is 0.1 seconds.
             pos (tuple[float | int, float | int]): The position of the sprite.
 
         """
         if name in self.sprites:
-            error.handle_error("Two sprites with same name", "fatal")
+            error.handle_error("Two sprites with same name, use copy instead", "fatal")
         self.sprites[name] = {
             "sprite": sprite,
             "interval": update_interval,
@@ -38,7 +39,7 @@ class SpriteManager:
         }
 
     def update(self, dt: float) -> None:
-        """Update the sprite clock.
+        """Update the sprite clock and current frame for sprites.
 
         Args:
             dt (float): Time passed since last frame in seconds.
@@ -69,6 +70,29 @@ class SpriteManager:
         for sprite_info_dict in self.sprites.values():
             sprite = sprite_info_dict["sprite"]
             screen.blit(sprite.frames[sprite.current_frame], sprite_info_dict["position"])
+
+    def copy(self, name: str, new_name: str, update_interval: float | None = None) -> None:
+        """Copy a sprite with a new name.
+
+        Args:
+            name (str): The name of the sprite to copy.
+            new_name (str): The new name of the sprite.
+
+        """
+        if name in self.sprites and new_name not in self.sprites:
+            self.sprites[new_name] = self.sprites[name].copy()
+        else:
+            error.handle_error("Sprite copy failure, use add instead or give unique name", "fatal")
+
+        # If we want a different update interval, we will need a new sprite class,
+        # since current frame is tracked within the class
+        if update_interval:
+            self.sprites[new_name]["sprite"] = Sprite(
+                self.sprites[name]["sprite"].sheet_path,
+                self.sprites[name]["sprite"].sprite_width,
+                self.sprites[name]["sprite"].sprite_height,
+            )
+            self.sprites[new_name]["interval"] = update_interval
 
 
 class Sprite:

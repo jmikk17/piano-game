@@ -79,8 +79,11 @@ class Game:
 
         self.musicplayer = MusicPlayer(data, self.assets, self.play_center, self.play_width, self.play_b_delay)
 
-        # sprite test!
+        # One of each sprite should be intilized in assets - here we change the position of the sprite
         self.assets.sprite_manager.change_position("trumpet", (500, 500))
+        # We can also do a copy of the sprite and change position and update interval
+        self.assets.sprite_manager.copy("trumpet", "trumpet2")
+        self.assets.sprite_manager.change_position("trumpet2", (600, 600))
 
     def draw(self, screen: pygame.Surface) -> None:
         """Draw the background, static part of the music player, and the spite(s).
