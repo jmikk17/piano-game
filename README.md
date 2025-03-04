@@ -9,8 +9,8 @@ If you have Python installed, you can run the game directly (tested for python 3
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
-   cd your-repo
+   git clone https://github.com/jmikk17/piano-game.git
+   cd piano-game
    ```
 2. Install required packages:
    ```bash
