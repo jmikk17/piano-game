@@ -24,7 +24,7 @@ class GameStateManager:
     Todo:
         * Implement asset deloading on state transition.
         * Use layout guidelines in game and change transition screen size.
-        * Add enum class in auxil for transitions and actions.
+        * Add enum class in auxil for transitions and actions instead of using strings.
 
     """
 

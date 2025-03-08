@@ -13,6 +13,12 @@ def main() -> None:
     setting up the logger, and initializing the game state manager. It then enters
     an infinite loop where it updates the game state, draws the game screen, and updates the display.
 
+    Todo:
+        * Add a song-ending mechanic
+        * Add visualization when playing keys
+        * Add a score system
+        * Add tracking for current pitch
+
     """
     pygame.init()
     pygame.mixer.init()

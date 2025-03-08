@@ -80,7 +80,6 @@ class MusicPlayer:
         self.current_slot = -1
         self.current_bar = 0
         self.time_per_slot = 60 / (self.song.bpm * self.song.slots_per_bar / std_cfg.BEATS_PER_BAR)  # Seconds per slot
-        print(self.time_per_slot)
         self.start_time = pygame.time.get_ticks() / 1000.0  # Current time in seconds
         self.last_update_time = self.start_time
 
