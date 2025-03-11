@@ -61,6 +61,10 @@ class GameAssets:
                 pygame.K_h: pygame.mixer.Sound(resource_path("audio/a6.ogg")),
                 pygame.K_j: pygame.mixer.Sound(resource_path("audio/b6.ogg")),
             }
+            self.note_sounds = {
+                "5": self.note_sounds_5,
+                "6": self.note_sounds_6,
+            }
             self.note_pictures_help = {
                 "4": pygame.transform.scale(
                     pygame.image.load(resource_path("graphics/quarter.png")).convert_alpha(),
