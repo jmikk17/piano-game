@@ -59,6 +59,7 @@ def handle_quit():
 
 
 def check_keyboard():
+    # TODO: remove after refactoring done
     key_state = {key: False for key in keys}
     pressed_keys = pygame.key.get_pressed()
     for key in keys:

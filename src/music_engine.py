@@ -25,7 +25,7 @@ class Note:
             bar (int): Bar number in song
             slot (int): Slot within the bar
             note_type (int): Duration or type of note
-            pitch (int): Pitch/octave of the note
+            pitch (int): Pitch of the note
 
         """
         self.bar = bar
@@ -35,7 +35,6 @@ class Note:
 
         self.active = False
         self.hit = False
-        self.missed = False
 
         self.rect = None
         self.image = None
@@ -216,10 +215,7 @@ class MusicPlayer:
         to_remove = []
         for note in self.active_notes:
             note.rect.x -= dt * std_cfg.NOTE_VELOCITY
-            if note.hit:
-                to_remove.append(note)
-            elif note.rect.x < 100 and note.hit:
-                note.missed = True
+            if note.hit or note.rect.x < 100:
                 to_remove.append(note)
         for note in to_remove:
             self.active_notes.remove(note)
@@ -242,7 +238,7 @@ class MusicPlayer:
 
     def check_note_hit(self, key):
         for note in self.active_notes:
-            if note.hit or note.missed:
+            if note.hit:
                 continue
 
                 # %7 or (+1)%7 here?????
@@ -308,6 +304,42 @@ class MusicPlayer:
         self.check_line_spawn()
         self.update_notes(dt)
         return status
+
+
+class new_MusicPlayer:
+    def __init__(self, song, assets, play_center, play_margain, play_b_time):
+        self.assets = assets
+        self.song = Song.from_json(song)
+        self.play_center = play_center
+        self.play_margain = play_margain
+        self.play_b_time = play_b_time
+
+        self.start_time = pygame.time.get_ticks() / 1000.0
+
+        self.note_manager = NoteManager(self.song, self.assets, self.play_margain)
+        self.audio_manager = AudioManager(self.song, self.assets, self.play_b_time)
+        self.input_handler = InputHandler()
+
+        self.play_state = {key: False for key in auxil.keys}
+        self.score = 0
+
+    def update(self, dt):
+        # this is proably not the best way to do this, seems like doing the same twive
+        key_state = self.input_handler.check_keyboard()
+        status = self.input_handler.handle_input(self.audio_manager.b_playing, self.audio_manager.b_track)
+
+        # problem here, note manager doesnt know which key is pressed
+        self.note_manager.check_note_hit(key_state, self.input_handler.octave)
+        self.note_manager.check_note_spawn()
+        self.note_manager.update_notes(dt)
+
+        self.audio_manager.play_notes(key_state, self.input_handler.octave)
+        self.audio_manager.play_b_track(self.start_time)
+
+        return status
+
+    def draw(self, screen):
+        self.note_manager.draw(screen)
 
 
 class AudioManager:
@@ -395,9 +427,23 @@ class InputHandler:
                     self.octave -= 1
         return None
 
+    def check_keyboard():
+        key_state = {key: False for key in auxil.keys}
+        pressed_keys = pygame.key.get_pressed()
+        for key in auxil.keys:
+            key_state[key] = pressed_keys[key]
+        return key_state
+
 
 class NoteManager:
-    def __init__(self, song, assets):
+    """A class for managing notes in a song.
+
+    Todo:
+        * Add spawning of "bar lines"
+
+    """
+
+    def __init__(self, song: Song, assets: GameAssets, play_margain: float) -> None:
         self.song = song
         self.assets = assets
 
@@ -406,3 +452,55 @@ class NoteManager:
         self.current_bar = 0
         self.time_per_slot = 60 / (self.song.bpm * self.song.slots_per_bar / std_cfg.BEATS_PER_BAR)
         self.last_update_time = pygame.time.get_ticks() / 1000.0
+
+        self.play_margain = play_margain
+
+    def check_note_spawn(self) -> None:
+        current_time = pygame.time.get_ticks() / 1000.0
+        if current_time - self.last_update_time >= self.time_per_slot:
+            if (self.current_slot + 1) % self.song.slots_per_bar < self.current_slot:
+                self.current_bar += 1
+            self.current_slot = (self.current_slot + 1) % self.song.slots_per_bar
+            self.last_update_time += self.time_per_slot
+            self.spawn_note()
+
+    def spawn_note(self) -> None:
+        notes = self.song.get_notes_for_time(self.current_bar + 1, self.current_slot + 1)
+        for note in notes:
+            if note.active is False:
+                if note.pitch > 6:
+                    note.image = pygame.transform.flip(self.assets.note_pictures[str(note.note_type)], True, True)
+                    note.rect = note.image.get_rect(center=(1200, 260 - note.pitch * 10))
+                else:
+                    note.image = self.assets.note_pictures[str(note.note_type)]
+                    note.rect = note.image.get_rect(center=(1200, 180 - note.pitch * 10))
+                note.active = True
+                self.active_notes.append(note)
+
+    def update_notes(self, dt) -> None:
+        to_remove = [note for note in self.active_notes if note.hit or note.rect.x < 100]
+        for note in to_remove:
+            self.active_notes.remove(note)
+        for note in self.active_notes:
+            note.rect.x -= dt * std_cfg.NOTE_VELOCITY
+
+    def check_note_hit(self, key, octave) -> tuple[bool, int]:
+        for note in self.active_notes:
+            if note.hit or not (
+                self.play_center - self.play_margain <= note.rect.centerx <= self.play_center + self.play_margain
+            ):
+                continue
+            if auxil.key_dictionary[note.pitch % 7] == key and (note.pitch // 7) + 5 == octave:
+                distance = abs(note.rect.centerx - self.play_center)
+                note.score = (
+                    1000 if distance < self.play_margain / 3 else 500 if distance < self.play_margain / 2 else 100
+                )
+                note.hit = True
+                return True, note.score
+        return False, 0
+
+    def draw(self, screen) -> None:
+        for note in self.active_notes:
+            screen.blit(note.image, note.rect)
+            if std_cfg.DEBUG_MODE:
+                pygame.draw.circle(screen, auxil.RED, (note.rect.centerx, note.rect.centery), 5)
