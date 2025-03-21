@@ -124,8 +124,7 @@ class Game:
             str: Return a string with "QUIT_TO_MENU" if the game should return to the menu.
 
         """
-        key_state = auxil.check_keyboard()
-        status = self.musicplayer.update(dt, key_state)
+        status = self.musicplayer.update(dt)
 
         # sprite test!
         self.assets.sprite_manager.update(dt)

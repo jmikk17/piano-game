@@ -39,6 +39,8 @@ class Note:
         self.rect = None
         self.image = None
 
+        self.score = 0
+
     def __repr__(self) -> str:
         """Return a string representation of the note, mainly for debugging purposes."""
         return f"Note(slot={self.slot}, type={self.note_type}, pitch={self.pitch})"
@@ -152,175 +154,13 @@ class MusicPlayer:
         self.play_margain = play_margain
         self.play_b_time = play_b_time
 
-        if self.song.b_path:
-            self.b_track = pygame.mixer.Sound(resource_path("audio/" + self.song.b_path))
-        self.b_playing = False
-
-        self.play_state = {key: False for key in auxil.keys}
-        self.octave = 5
-
-        self.score = 0
-
-        self.current_slot = -1
-        self.current_bar = 0
-        self.time_per_slot = 60 / (self.song.bpm * self.song.slots_per_bar / std_cfg.BEATS_PER_BAR)  # Seconds per slot
-        self.start_time = pygame.time.get_ticks() / 1000.0  # Current time in seconds
-        self.last_update_time = self.start_time
-
-        self.active_notes = []
-        self.line_spawned = False
-
-    def check_note_spawn(self) -> None:
-        """Check if it is time to spawn notes."""
-        current_time = pygame.time.get_ticks() / 1000.0
-
-        if current_time - self.last_update_time >= self.time_per_slot:
-            if (self.current_slot + 1) % self.song.slots_per_bar < self.current_slot:
-                self.current_bar += 1
-            self.current_slot = (self.current_slot + 1) % self.song.slots_per_bar
-            self.last_update_time += self.time_per_slot
-            self.spawn_notes()
-        if self.song.b_path and (current_time - self.start_time >= self.play_b_time and not self.b_playing):
-            self.b_playing = True
-            self.b_track.play()
-
-    def check_line_spawn(self) -> None:
-        current_time = pygame.time.get_ticks() / 1000.0
-        if self.line_spawned is False:
-            if (
-                self.current_slot is std_cfg.SLOTS_PER_BAR - 1
-                and current_time - self.last_update_time >= self.time_per_slot / 2
-            ):
-                self.spawn_line()
-                self.line_spawned = True
-        elif self.current_slot == 0:
-            self.line_spawned = False
-
-    def spawn_notes(self) -> None:
-        notes = self.song.get_notes_for_time(self.current_bar + 1, self.current_slot + 1)
-        for note in notes:
-            if note.active is False:
-                if note.pitch > 6:
-                    # could potentially move this to init of a note
-                    # at least image, so we can preprocess line/noline and transform
-                    note.image = pygame.transform.flip(self.assets.note_pictures[str(note.note_type)], True, True)
-                    note.rect = note.image.get_rect(center=(1200, 260 - note.pitch * 10))
-                else:
-                    note.image = self.assets.note_pictures[str(note.note_type)]
-                    note.rect = note.image.get_rect(center=(1200, 180 - note.pitch * 10))
-                note.active = True
-                self.active_notes.append(note)
-
-    def update_notes(self, dt) -> None:
-        to_remove = []
-        for note in self.active_notes:
-            note.rect.x -= dt * std_cfg.NOTE_VELOCITY
-            if note.hit or note.rect.x < 100:
-                to_remove.append(note)
-        for note in to_remove:
-            self.active_notes.remove(note)
-
-    def play_notes(self, key_state) -> None:
-        for key, is_pressed in key_state.items():
-            if is_pressed and not self.play_state[key]:
-                self.play_state[key] = True
-                if self.octave == 5:
-                    self.assets.note_sounds_5[key].play()
-                elif self.octave == 6:
-                    self.assets.note_sounds_6[key].play()
-                hit, score = self.check_note_hit(key)
-                if hit:
-                    self.score += score
-            elif not is_pressed:
-                self.play_state[key] = False
-                self.assets.note_sounds_5[key].fadeout(std_cfg.FADEOUT)
-                self.assets.note_sounds_6[key].fadeout(std_cfg.FADEOUT)
-
-    def check_note_hit(self, key):
-        for note in self.active_notes:
-            if note.hit:
-                continue
-
-                # %7 or (+1)%7 here?????
-            if (
-                auxil.key_dictionary[note.pitch % 7] == key
-                and
-                # self.play_center - self.play_margain <= note.rect.centerx-5 <= self.play_center + self.play_margain):
-                self.play_center - self.play_margain <= note.rect.centerx <= self.play_center + self.play_margain
-            ):
-                # -5 is manual adjustment for pictures, probalby doesnt scale well?
-
-                # Calculate score based on accuracy
-                # distance = abs(note.rect.centerx - self.play_center)
-                distance = abs(note.rect.centerx - self.play_center)
-                if distance < self.play_margain / 3:
-                    note.score = 1000  # Perfect
-                elif distance < self.play_margain / 2:
-                    note.score = 500  # Good
-                else:
-                    note.score = 100  # OK
-
-                note.hit = True
-
-                return True, note.score
-
-        return False, 0  # No note hit
-
-    def spawn_line(self):
-        # TODO
-        pass
-
-    def handle_input(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    if self.b_playing:
-                        self.b_track.stop()
-                    return "QUIT_TO_MENU"
-                if event.key == pygame.K_UP:
-                    if self.octave < 6:
-                        self.octave += 1
-                    print(self.octave)
-                if event.key == pygame.K_DOWN:
-                    if self.octave > 5:
-                        self.octave -= 1
-                    print(self.octave)
-        return None
-
-    def draw(self, screen):
-        for note in self.active_notes:
-            screen.blit(note.image, note.rect)
-            if std_cfg.DEBUG_MODE:
-                # Red circle for debug
-                pygame.draw.circle(screen, auxil.RED, (note.rect.centerx, note.rect.centery), 5)
-
-    def update(self, dt, key_state):
-        status = self.handle_input()
-        self.play_notes(key_state)
-        self.check_note_spawn()
-        self.check_line_spawn()
-        self.update_notes(dt)
-        return status
-
-
-class new_MusicPlayer:
-    def __init__(self, song, assets, play_center, play_margain, play_b_time):
-        self.assets = assets
-        self.song = Song.from_json(song)
-        self.play_center = play_center
-        self.play_margain = play_margain
-        self.play_b_time = play_b_time
-
         self.start_time = pygame.time.get_ticks() / 1000.0
 
-        self.note_manager = NoteManager(self.song, self.assets, self.play_margain)
+        self.note_manager = NoteManager(self.song, self.assets, self.play_margain, self.play_center)
         self.audio_manager = AudioManager(self.song, self.assets, self.play_b_time)
         self.input_handler = InputHandler()
 
-        self.play_state = {key: False for key in auxil.keys}
+        self.play_state = dict.fromkeys(auxil.keys, False)
         self.score = 0
 
     def update(self, dt):
@@ -331,7 +171,8 @@ class new_MusicPlayer:
         # problem here, note manager doesnt know which key is pressed
         self.note_manager.check_note_hit(key_state, self.input_handler.octave)
         self.note_manager.check_note_spawn()
-        self.note_manager.update_notes(dt)
+        self.score += self.note_manager.update_notes(dt)
+        print(self.score)
 
         self.audio_manager.play_notes(key_state, self.input_handler.octave)
         self.audio_manager.play_b_track(self.start_time)
@@ -366,6 +207,7 @@ class AudioManager:
 
         self.assets = assets
 
+        self.b_track = None
         if self.song.b_path:
             self.b_track = pygame.mixer.Sound(resource_path("audio/" + self.song.b_path))
 
@@ -391,7 +233,7 @@ class AudioManager:
         """
         for key, is_pressed in key_state.items():
             if is_pressed:
-                self.assets.note_sounds[octave][key].play()
+                self.assets.note_sounds[str(octave)][key].play()
             elif not is_pressed:
                 for octave_key in self.assets.note_sounds:
                     self.assets.note_sounds[octave_key][key].fadeout(std_cfg.FADEOUT)
@@ -427,8 +269,8 @@ class InputHandler:
                     self.octave -= 1
         return None
 
-    def check_keyboard():
-        key_state = {key: False for key in auxil.keys}
+    def check_keyboard(self):
+        key_state = dict.fromkeys(auxil.keys, False)
         pressed_keys = pygame.key.get_pressed()
         for key in auxil.keys:
             key_state[key] = pressed_keys[key]
@@ -443,7 +285,7 @@ class NoteManager:
 
     """
 
-    def __init__(self, song: Song, assets: GameAssets, play_margain: float) -> None:
+    def __init__(self, song: Song, assets: GameAssets, play_margain: float, play_center: float) -> None:
         self.song = song
         self.assets = assets
 
@@ -454,8 +296,10 @@ class NoteManager:
         self.last_update_time = pygame.time.get_ticks() / 1000.0
 
         self.play_margain = play_margain
+        self.play_center = play_center
 
     def check_note_spawn(self) -> None:
+        """Check if delta t is enough to update slot and bar. Also spawn notes when updating."""
         current_time = pygame.time.get_ticks() / 1000.0
         if current_time - self.last_update_time >= self.time_per_slot:
             if (self.current_slot + 1) % self.song.slots_per_bar < self.current_slot:
@@ -465,6 +309,7 @@ class NoteManager:
             self.spawn_note()
 
     def spawn_note(self) -> None:
+        """Spawn notes for the current slot and bar."""
         notes = self.song.get_notes_for_time(self.current_bar + 1, self.current_slot + 1)
         for note in notes:
             if note.active is False:
@@ -477,27 +322,46 @@ class NoteManager:
                 note.active = True
                 self.active_notes.append(note)
 
-    def update_notes(self, dt) -> None:
+    def update_notes(self, dt) -> float:
+        """Update note positions on the screen, and remove notes that have been hit or are out of bounds.
+
+        Args:
+            dt (float): Time since last update
+
+        """
+        score = 0
         to_remove = [note for note in self.active_notes if note.hit or note.rect.x < 100]
         for note in to_remove:
+            score += note.score
             self.active_notes.remove(note)
         for note in self.active_notes:
             note.rect.x -= dt * std_cfg.NOTE_VELOCITY
+        return score
 
-    def check_note_hit(self, key, octave) -> tuple[bool, int]:
+    def check_note_hit(self, key_state, octave) -> None:
+        """Check whether any notes in the active_notes list have been hit.
+
+        Args:
+            key_state (dict): _description_
+            octave (int): _description_
+
+        Returns:
+            tuple[bool, int]: _description_
+
+        """
         for note in self.active_notes:
             if note.hit or not (
                 self.play_center - self.play_margain <= note.rect.centerx <= self.play_center + self.play_margain
             ):
                 continue
-            if auxil.key_dictionary[note.pitch % 7] == key and (note.pitch // 7) + 5 == octave:
-                distance = abs(note.rect.centerx - self.play_center)
-                note.score = (
-                    1000 if distance < self.play_margain / 3 else 500 if distance < self.play_margain / 2 else 100
-                )
-                note.hit = True
-                return True, note.score
-        return False, 0
+            for key in key_state:
+                # +5 is manual adjustment, since it's the lowest octave right now
+                if key_state[key] and auxil.key_dictionary[note.pitch % 7] == key and (note.pitch // 7) + 5 == octave:
+                    distance = abs(note.rect.centerx - self.play_center)
+                    note.score = (
+                        1000 if distance < self.play_margain / 3 else 500 if distance < self.play_margain / 2 else 100
+                    )
+                    note.hit = True
 
     def draw(self, screen) -> None:
         for note in self.active_notes:
