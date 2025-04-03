@@ -147,6 +147,8 @@ class Song:
 
 
 class MusicPlayer:
+    """Class for playing a song."""
+
     def __init__(self, song, assets, play_center, play_margain, play_b_time):
         self.assets = assets
         self.song = Song.from_json(song)
