@@ -49,12 +49,6 @@ class Note:
 class Song:
     """A class representing a song with notes to play.
 
-    Attributes:
-        bpm (int): BPM of the song
-        slots_per_bar (int): Slots per bar of the song
-        notes (list[Note]): List of notes in the song
-        b_path (str | None): Path to the b-track for the song
-
     Methods:
         add_note: Add a note to the song
         remove_note: Remove a note from the song
@@ -147,9 +141,32 @@ class Song:
 
 
 class MusicPlayer:
-    """Class for playing a song."""
+    """Class for playing a song.
 
-    def __init__(self, song, assets, play_center, play_margain, play_b_time):
+    Methods:
+        update: Update the music player
+        draw: Draw the notes on the screen
+
+    """
+
+    def __init__(
+        self,
+        song: str,
+        assets: GameAssets,
+        play_center: float,
+        play_margain: float,
+        play_b_time: float,
+    ) -> None:
+        """Initialize the music player.
+
+        Args:
+            song (str): The file path for the song selected.
+            assets (GameAssets): The assets used in the game.
+            play_center (float): x-coordinate of the center of the play area
+            play_margain (float): Width of the play area
+            play_b_time (float): When to start playing the b-track to match with notes
+
+        """
         self.assets = assets
         self.song = Song.from_json(song)
         self.play_center = play_center
@@ -165,23 +182,39 @@ class MusicPlayer:
         self.play_state = dict.fromkeys(auxil.keys, False)
         self.score = 0
 
-    def update(self, dt):
+    def update(self, dt: float) -> str | None:
+        """Update the musicplayer.
+
+        Args:
+            dt (float): Time since last update
+
+        Returns:
+            str | None: Status of the game, such as "QUIT_TO_MENU" or None
+
+        """
         # this is proably not the best way to do this, seems like doing the same twive
         key_state = self.input_handler.check_keyboard()
-        status = self.input_handler.handle_input(self.audio_manager.b_playing, self.audio_manager.b_track)
+        status = self.input_handler.handle_input(self.audio_manager.b_track, b_playing=self.audio_manager.b_playing)
 
         # problem here, note manager doesnt know which key is pressed
         self.note_manager.check_note_hit(key_state, self.input_handler.octave)
         self.note_manager.check_note_spawn()
         self.score += self.note_manager.update_notes(dt)
-        print(self.score)
+        if std_cfg.DEBUG_MODE:
+            print(self.score)
 
         self.audio_manager.play_notes(key_state, self.input_handler.octave)
         self.audio_manager.play_b_track(self.start_time)
 
         return status
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the notes.
+
+        Args:
+            screen (pygame.Surface): The display surface for the game.
+
+        """
         self.note_manager.draw(screen)
 
 
@@ -246,16 +279,25 @@ class InputHandler:
 
     Methods:
         handle_input: Handle input during a song, such as changing octave or quitting
+        check_keyboard: Check the state of the keyboard
 
     """
-
-    # How to handle octave? And b_track? Attributes here or in musicplayer?
 
     def __init__(self) -> None:
         """Set the initial octave to 5."""
         self.octave = 5
 
-    def handle_input(self, b_playing, b_track):
+    def handle_input(self, b_track: pygame.mixer.Sound | None, *, b_playing: bool) -> str | None:
+        """Handle input during a song.
+
+        Args:
+            b_playing (bool): Whether the b-track is playing
+            b_track (pygame.mixer.Sound): The b-track sound object
+
+        Returns:
+            str | None: Status of the game, such as "QUIT_TO_MENU" or None
+
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -265,13 +307,20 @@ class InputHandler:
                     if b_playing:
                         b_track.stop()
                     return "QUIT_TO_MENU"
-                if event.key == pygame.K_UP and self.octave < 6:
+                if event.key == pygame.K_UP and self.octave < std_cfg.MAX_OCTAVE:
                     self.octave += 1
-                if event.key == pygame.K_DOWN and self.octave > 5:
+                if event.key == pygame.K_DOWN and self.octave > std_cfg.MIN_OCTAVE:
                     self.octave -= 1
         return None
 
-    def check_keyboard(self):
+    def check_keyboard(self) -> dict:
+        """Check the state of the keyboard.
+
+        Returns:
+            dict: Dictionary of key states, where the key is the key name and the value is True if pressed,
+            False otherwise
+
+        """
         key_state = dict.fromkeys(auxil.keys, False)
         pressed_keys = pygame.key.get_pressed()
         for key in auxil.keys:
@@ -284,10 +333,20 @@ class NoteManager:
 
     Todo:
         * Add spawning of "bar lines"
+        * Fix hard coded values for note spawning and removing
 
     """
 
     def __init__(self, song: Song, assets: GameAssets, play_margain: float, play_center: float) -> None:
+        """Initialize the note manager.
+
+        Args:
+            song (Song): Song object being played
+            assets (GameAssets): Assets object containing audio for notes
+            play_margain (float): Width of the play area
+            play_center (float): x-coordinate of the center of the play area
+
+        """
         self.song = song
         self.assets = assets
 
@@ -315,8 +374,12 @@ class NoteManager:
         notes = self.song.get_notes_for_time(self.current_bar + 1, self.current_slot + 1)
         for note in notes:
             if note.active is False:
-                if note.pitch > 6:
-                    note.image = pygame.transform.flip(self.assets.note_pictures[str(note.note_type)], True, True)
+                if note.pitch >= std_cfg.NOTE_MIRROR:
+                    note.image = pygame.transform.flip(
+                        self.assets.note_pictures[str(note.note_type)],
+                        flip_x=True,
+                        flip_y=True,
+                    )
                     note.rect = note.image.get_rect(center=(1200, 260 - note.pitch * 10))
                 else:
                     note.image = self.assets.note_pictures[str(note.note_type)]
@@ -324,7 +387,7 @@ class NoteManager:
                 note.active = True
                 self.active_notes.append(note)
 
-    def update_notes(self, dt) -> float:
+    def update_notes(self, dt: float) -> float:
         """Update note positions on the screen, and remove notes that have been hit or are out of bounds.
 
         Args:
@@ -340,7 +403,7 @@ class NoteManager:
             note.rect.x -= dt * std_cfg.NOTE_VELOCITY
         return score
 
-    def check_note_hit(self, key_state, octave) -> None:
+    def check_note_hit(self, key_state: dict, octave: int) -> None:
         """Check whether any notes in the active_notes list have been hit.
 
         Args:
@@ -356,16 +419,25 @@ class NoteManager:
                 self.play_center - self.play_margain <= note.rect.centerx <= self.play_center + self.play_margain
             ):
                 continue
-            for key in key_state:
-                # +5 is manual adjustment, since it's the lowest octave right now
-                if key_state[key] and auxil.key_dictionary[note.pitch % 7] == key and (note.pitch // 7) + 5 == octave:
+            for key, playing in key_state.items():
+                if (
+                    playing
+                    and auxil.key_dictionary[note.pitch % 7] == key
+                    and (note.pitch // 7) + std_cfg.MIN_OCTAVE == octave
+                ):
                     distance = abs(note.rect.centerx - self.play_center)
                     note.score = (
                         1000 if distance < self.play_margain / 3 else 500 if distance < self.play_margain / 2 else 100
                     )
                     note.hit = True
 
-    def draw(self, screen) -> None:
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draw the notes on the screen.
+
+        Args:
+            screen (pygame.Surface): The display surface for the game.
+
+        """
         for note in self.active_notes:
             screen.blit(note.image, note.rect)
             if std_cfg.DEBUG_MODE:

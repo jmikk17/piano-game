@@ -1,7 +1,9 @@
+import logging
+
 import pygame
 
 import auxil
-import error
+import log
 from resource_path import resource_path
 from sprite import Sprite, SpriteManager
 
@@ -17,7 +19,7 @@ class MenuAssets:
         try:
             self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
         except (pygame.error, FileNotFoundError):
-            error.handle_error("Menu background img not found", "not_fatal")
+            log.log_write("Menu background img not found", logging.ERROR)
             self.background = pygame.Surface((1280, 720))
             self.background.fill(auxil.WHITE)
 
@@ -31,6 +33,8 @@ class GameAssets:
         self.sprite_manager = SpriteManager()
 
         self.background = None
+
+        self.note_sounds = None
         self.note_sounds_5 = None
         self.note_sounds_6 = None
 
@@ -40,7 +44,7 @@ class GameAssets:
             trumpet_sprite = Sprite(resource_path("graphics/trumpet.png"), 32, 32)
             self.sprite_manager.add_sprite("trumpet", trumpet_sprite, 0.1)
         except (pygame.error, FileNotFoundError):
-            print("Trumpet sprite not found")
+            log.log_write("Trumpet sprite not found", logging.ERROR)
         try:
             self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
             self.note_sounds_5 = {
@@ -98,10 +102,9 @@ class GameAssets:
                 ),
             }
         except (pygame.error, FileNotFoundError):
-            error.handle_error("Menu background img not found", "not_fatal")
+            log.log_write("Menu background img not found", logging.ERROR)
             self.background = pygame.Surface((1280, 720))
             self.background.fill(auxil.WHITE)
-            # TODO error handeling for sounds and notes
 
     def unload(self):
         if self.background:

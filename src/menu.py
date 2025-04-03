@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import logging
 import os
 import sys
 from abc import ABC, abstractmethod
@@ -8,7 +9,7 @@ from abc import ABC, abstractmethod
 import pygame
 
 import auxil
-import error
+import log
 import ui
 from assets import MenuAssets
 from cfg import std_cfg
@@ -140,7 +141,7 @@ class SongSelectMenu(BaseMenu):
     def load_available_songs(self):
         song_dir = resource_path("songs/")
         if not os.path.exists(song_dir):
-            error.handle_error("Songs dir not found", "fatal")
+            log.log_write("Songs dir not found", logging.CRITICAL)
 
         song_files = [f for f in os.listdir(song_dir) if f.endswith(".json")]
 

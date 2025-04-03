@@ -1,4 +1,4 @@
-import logging  # noqa: D100
+import logging
 
 
 # Written as a class if need other configs in the future
@@ -15,6 +15,9 @@ class Config:
     NOTE_VELOCITY = 300
     FADEOUT = 250
     FONT = "courier new"
+    MIN_OCTAVE = 5
+    MAX_OCTAVE = 6
+    NOTE_MIRROR = 7
 
     # Play area settings
     PLAY_AREA_X = 350

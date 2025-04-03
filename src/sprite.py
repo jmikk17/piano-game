@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import logging
+
 import pygame
 
-import error
+import log
 
 
 class SpriteManager:
@@ -30,7 +32,7 @@ class SpriteManager:
 
         """
         if name in self.sprites:
-            error.handle_error("Two sprites with same name, use copy instead", "fatal")
+            log.log_write("Two sprites with same name, use copy instead", logging.CRITICAL)
         self.sprites[name] = {
             "sprite": sprite,
             "interval": update_interval,
@@ -82,7 +84,7 @@ class SpriteManager:
         if name in self.sprites and new_name not in self.sprites:
             self.sprites[new_name] = self.sprites[name].copy()
         else:
-            error.handle_error("Sprite copy failure, use add instead or give unique name", "fatal")
+            log.handle_error("Sprite copy failure, use add instead or give unique name", "fatal")
 
         # If we want a different update interval, we will need a new sprite class,
         # since current frame is tracked within the class
