@@ -1,5 +1,7 @@
 # Piano Game
 
+![Piano Game Screenshot](screenshot.png "Piano Game in action")
+
 piano game :)
 
 ## Installation Options
@@ -22,7 +24,8 @@ If you have Python installed, you can run the game directly (tested for python 3
    ```
 
 ## Controls
-keyboard key: note
+The notes are laid out as on the keyboard, but currently # and b are not supported.
+
 - a: C
 - s: D
 - d: E
@@ -30,3 +33,5 @@ keyboard key: note
 - g: G
 - h: A
 - j: H
+- &uarr: Octave up
+- &darr: Octave down
