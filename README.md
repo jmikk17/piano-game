@@ -33,5 +33,5 @@ The notes are laid out as on the keyboard, but currently # and b are not support
 - g: G
 - h: A
 - j: H
-- &uarr: Octave up
-- &darr: Octave down
+- &uarr;: Octave up
+- &darr;: Octave down
