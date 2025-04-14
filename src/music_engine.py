@@ -179,7 +179,7 @@ class MusicPlayer:
         self.audio_manager = AudioManager(self.song, self.assets, self.play_b_time)
         self.input_handler = InputHandler()
 
-        self.play_state = dict.fromkeys(auxil.keys, False)
+        self.key_state = dict.fromkeys(auxil.keys, False)
         self.score = 0
 
     def update(self, dt: float) -> str | None:
@@ -192,18 +192,14 @@ class MusicPlayer:
             str | None: Status of the game, such as "QUIT_TO_MENU" or None
 
         """
-        # this is proably not the best way to do this, seems like doing the same twive
-        key_state = self.input_handler.check_keyboard()
+        self.key_state = self.input_handler.check_keyboard()
         status = self.input_handler.handle_input(self.audio_manager.b_track, b_playing=self.audio_manager.b_playing)
 
-        # problem here, note manager doesnt know which key is pressed
-        self.note_manager.check_note_hit(key_state, self.input_handler.octave)
+        self.note_manager.check_note_hit(self.key_state, self.input_handler.octave)
         self.note_manager.check_note_spawn()
         self.score += self.note_manager.update_notes(dt)
-        if std_cfg.DEBUG_MODE:
-            print(self.score)
 
-        self.audio_manager.play_notes(key_state, self.input_handler.octave)
+        self.audio_manager.play_notes(self.key_state, self.input_handler.octave)
         self.audio_manager.play_b_track(self.start_time)
 
         return status
@@ -216,6 +212,21 @@ class MusicPlayer:
 
         """
         self.note_manager.draw(screen)
+        auxil.display_score(self.score, screen, auxil.WHITE)
+        auxil.display_octave(self.input_handler.octave, screen, auxil.WHITE)
+
+        for key, is_pressed in self.key_state.items():
+            if is_pressed:
+                index = auxil.keys.index(key)
+                pygame.draw.circle(
+                    screen,
+                    auxil.RED,
+                    (self.play_center, 220 - (index + (self.input_handler.octave - 5) * 7) * 10),
+                    5,
+                )
+
+        if std_cfg.DEBUG_MODE:
+            auxil.display_fps(pygame.time.Clock(), screen, auxil.WHITE)
 
 
 class AudioManager:
@@ -351,7 +362,7 @@ class NoteManager:
         self.assets = assets
 
         self.active_notes = []
-        self.current_slot = -1  # because we only check on update?
+        self.current_slot = -1  # because we only check on update
         self.current_bar = 0
         self.time_per_slot = 60 / (self.song.bpm * self.song.slots_per_bar / std_cfg.BEATS_PER_BAR)
         self.last_update_time = pygame.time.get_ticks() / 1000.0

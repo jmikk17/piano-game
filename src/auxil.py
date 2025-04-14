@@ -39,15 +39,21 @@ def get_sysfont(font, size):
     return pygame.font.SysFont(font, size)
 
 
-def display_fps(clock, screen):
+def display_fps(clock, screen, color):
     font = pygame.font.Font(None, 36)
-    fps_text = font.render(f"FPS: {int(clock.get_fps())}", True, BLACK)
-    screen.blit(fps_text, (10, 10))
+    fps_text = font.render(f"FPS: {int(clock.get_fps())}", True, color)
+    screen.blit(fps_text, (10, 90))
 
 
-def display_score(score, screen):
+def display_score(score, screen, color):
     font = pygame.font.Font(None, 36)
-    score_text = font.render(f"Score: {score}", True, BLACK)
+    score_text = font.render(f"Score: {score}", True, color)
+    screen.blit(score_text, (10, 10))
+
+
+def display_octave(octave, screen, color):
+    font = pygame.font.Font(None, 36)
+    score_text = font.render(f"Current octave: {octave}", True, color)
     screen.blit(score_text, (10, 50))
 
 
@@ -56,12 +62,3 @@ def handle_quit():
         if event.type == pygame.QUIT:
             pygame.quit()
             return
-
-
-def check_keyboard():
-    # TODO: remove after refactoring done
-    key_state = {key: False for key in keys}
-    pressed_keys = pygame.key.get_pressed()
-    for key in keys:
-        key_state[key] = pressed_keys[key]
-    return key_state

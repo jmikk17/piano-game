@@ -29,7 +29,7 @@ class Config:
     ANTIALIAS = True
 
     # Logging settings
-    DEBUG_MODE = True
+    DEBUG_MODE = False
     LOG_FILE = "game.log"
     LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
     LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"

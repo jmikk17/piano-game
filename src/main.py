@@ -1,6 +1,5 @@
 import pygame
 
-import auxil
 import log
 from cfg import std_cfg
 from gamestate import GameStateManager
@@ -14,10 +13,11 @@ def main() -> None:
     an infinite loop where it updates the game state, draws the game screen, and updates the display.
 
     Todo:
-        * Add a song-ending mechanic
-        * Add visualization when playing keys
-        * Add a score system
-        * Add tracking for current pitch
+        * A song-ending mechanic
+        * Add options menu / controls overview (ability to change key bindings)
+        * At least 2 more songs
+        * Some more meaningfull testing
+        * Linting and docstrings
 
     """
     pygame.init()
@@ -36,8 +36,6 @@ def main() -> None:
         manager.update(dt)
 
         manager.draw()
-
-        auxil.display_fps(clock, screen)
 
         pygame.display.flip()
 
