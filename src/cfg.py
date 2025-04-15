@@ -1,8 +1,9 @@
 import logging
 
 
-# Written as a class if need other configs in the future
 class Config:
+    """Class for the game configuration."""
+
     # Screen settings
     SCREEN_WIDTH = 1280
     SCREEN_HEIGHT = 720
@@ -41,8 +42,4 @@ class Config:
         LOG_TO_CONSOLE = False
 
 
-# The std_cfg instance is imported by all, so we could e.g. do:
-# if DEBUG_mode:
-#   std_cfg = Config_debug()
-# else:
 std_cfg = Config()

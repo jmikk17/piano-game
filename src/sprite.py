@@ -79,6 +79,8 @@ class SpriteManager:
         Args:
             name (str): The name of the sprite to copy.
             new_name (str): The new name of the sprite.
+            update_interval (float | None): The new update interval for the sprite.
+                If None, the original update interval is used.
 
         """
         if name in self.sprites and new_name not in self.sprites:

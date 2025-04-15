@@ -109,7 +109,7 @@ class Song:
             Song: A Song object created from the JSON file
 
         """
-        with Path(resource_path("songs/" + filepath)).open() as f:
+        with Path(filepath).open() as f:
             data = json.load(f)
         b_path = data.get("b_path", None)
         song = cls(data["bpm"], data["slots_per_bar"], b_path)
@@ -270,7 +270,7 @@ class AudioManager:
             self.b_track.play()
 
     def play_notes(self, key_state: dict[str, bool], octave: int) -> None:
-        """Play notes when keys are pressed.
+        """Play notes according to keys that are pressed.
 
         Args:
             key_state (dict[str, bool]): Dictionary of key states

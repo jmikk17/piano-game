@@ -13,14 +13,6 @@ from menu import MenuManager
 class GameStateManager:
     """Manages the state transitions and updates for the game.
 
-    Attributes:
-        screen (pygame.Surface): The display surface for the game.
-        mediator (ui.Mediator): Mediator for UI interactions.
-        layout (ui.UIAuxil): Layout manager for UI components.
-        menu_manager (MenuManager): Manager for handling menu interactions.
-        current_state (str): The current state of the game ("MENU" or "GAME").
-        game (Game, optional): Instance of the game, initialized when transitioning to the game state.
-
     Todo:
         * Implement asset deloading on state transition.
         * Use layout guidelines in game and change transition screen size.

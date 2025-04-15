@@ -18,24 +18,6 @@ class Game:
 
     This class draws the static part of the music player, and initialize and updates the music player.
 
-    Attributes:
-        assets (GameAssets): The assets used in the game.
-        layout (UIAuxil): The layout guidelines for the game.
-        scaled_background (pygame.Surface, optional): The background image scaled to the screen size.
-        lines (int): The number of lines on the screen.
-        line_thick (int): The thickness of the lines.
-        line_gap (int): The gap between the lines.
-        line_lower (int): The y-coordinate of the lower line.
-        line_left (int): The x-coordinate of the left line.
-        line_right (int): The x-coordinate of the right line.
-        play_box (tuple): The rectangle for the play area.
-        play_width (int): The width of the play area.
-        play_center (int): The center of the play area.
-        play_b_delay (int): The delay for the play area.
-        musicplayer (MusicPlayer): The music player for the game.
-        trumpet_time (float): The time for the trumpet sprite.
-        current_trumpet (int): The current trumpet sprite.
-
     Todo:
         * Standardize the screen layout from the layout class instead of hardcoded values.
         * Make seperate class for handling sprites.
@@ -73,9 +55,8 @@ class Game:
         self.play_center = self.play_box[0] + self.play_width
 
         self.play_b_delay = (1200 - self.play_center) / std_cfg.NOTE_VELOCITY
-        # 1200 = where we spawn notes
-        # self.play_center = where we register hit
-        # -5 = adjustment for center of note ish
+        # 1200 is the hardcoded value for where we spawn notes,
+        # self.play_center is the hardcoded value for where we register hit
 
         self.musicplayer = MusicPlayer(data, self.assets, self.play_center, self.play_width, self.play_b_delay)
 

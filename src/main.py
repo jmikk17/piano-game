@@ -17,7 +17,7 @@ def main() -> None:
         * Add options menu / controls overview (ability to change key bindings)
         * At least 2 more songs
         * Some more meaningfull testing
-        * Linting and docstrings
+        * Linting and docstrings, cleanup in already done docstrings
 
     """
     pygame.init()
