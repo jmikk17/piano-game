@@ -257,6 +257,11 @@ class AudioManager:
         if self.song.b_path:
             self.b_track = pygame.mixer.Sound(resource_path("audio/" + self.song.b_path))
 
+        self.playing = {
+            octave_key: dict.fromkeys(self.assets.note_sounds[octave_key], False)
+            for octave_key in self.assets.note_sounds
+        }
+
     def play_b_track(self, start_time: float) -> None:
         """Play the b-track of the song if enough time has passed and it is not already playing.
 
@@ -278,11 +283,14 @@ class AudioManager:
 
         """
         for key, is_pressed in key_state.items():
-            if is_pressed:
+            if is_pressed and self.playing[str(octave)][key] is False:
                 self.assets.note_sounds[str(octave)][key].play()
+                self.playing[str(octave)][key] = True
             elif not is_pressed:
                 for octave_key in self.assets.note_sounds:
-                    self.assets.note_sounds[octave_key][key].fadeout(std_cfg.FADEOUT)
+                    if self.playing[str(octave)][key]:
+                        self.assets.note_sounds[octave_key][key].fadeout(std_cfg.FADEOUT)
+                        self.playing[str(octave)][key] = False
 
 
 class InputHandler:

@@ -54,9 +54,10 @@ class Game:
         self.play_width = self.play_box[2] / 2
         self.play_center = self.play_box[0] + self.play_width
 
-        self.play_b_delay = (1200 - self.play_center) / std_cfg.NOTE_VELOCITY
+        self.play_b_delay = 0.2 + (1200 - self.play_center) / std_cfg.NOTE_VELOCITY
         # 1200 is the hardcoded value for where we spawn notes,
         # self.play_center is the hardcoded value for where we register hit
+        # 0.2 correction neccesary, not sure why
 
         self.musicplayer = MusicPlayer(data, self.assets, self.play_center, self.play_width, self.play_b_delay)
 
