@@ -9,9 +9,9 @@ from cfg import std_cfg
 
 def setup_logger() -> None:
     """Initialize the logger for the game."""
-    if Path(std_cfg.LOG_FILE).exists and not std_cfg.DEBUG_MODE:
+    if Path(std_cfg.LOG_FILE).exists() and not std_cfg.DEBUG_MODE:
         Path(std_cfg.LOG_FILE).unlink()
-    handlers = [logging.FileHandler(std_cfg.LOG_FILE)]
+    handlers: list[logging.Handler] = [logging.FileHandler(std_cfg.LOG_FILE)]
     if std_cfg.LOG_TO_CONSOLE:
         handlers.append(logging.StreamHandler())
 
@@ -26,7 +26,7 @@ def setup_logger() -> None:
     logger.info("Logger initialized")
 
 
-def log_write(message: str, level: int = logging.info) -> None:
+def log_write(message: str, level: int = logging.INFO) -> None:
     """Log a message with the specified level."""
     logger = logging.getLogger(__name__)
     if level <= logging.DEBUG:

@@ -5,3 +5,4 @@ keybinds.json
 .coverage
 build/
 dist/
+.venv/

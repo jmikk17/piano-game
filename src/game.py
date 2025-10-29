@@ -54,18 +54,16 @@ class Game:
         self.play_width = self.play_box[2] / 2
         self.play_center = self.play_box[0] + self.play_width
 
-        self.play_b_delay = 0.2 + (1200 - self.play_center) / std_cfg.NOTE_VELOCITY
+        self.play_b_delay = 0.1 + (1200 - self.play_center) / std_cfg.NOTE_VELOCITY
         # 1200 is the hardcoded value for where we spawn notes,
         # self.play_center is the hardcoded value for where we register hit
-        # 0.2 correction neccesary, not sure why
+        # TODO 0.1 correction seems neccesary, not sure why
 
         self.musicplayer = MusicPlayer(data, self.assets, self.play_center, self.play_width, self.play_b_delay)
 
         # One of each sprite should be intilized in assets - here we change the position of the sprite
         self.assets.sprite_manager.change_position("trumpet", (500, 500))
         # We can also do a copy of the sprite and change position and update interval
-        self.assets.sprite_manager.copy("trumpet", "trumpet2")
-        self.assets.sprite_manager.change_position("trumpet2", (600, 600))
 
     def draw(self, screen: pygame.Surface) -> None:
         """Draw the background, static part of the music player, and the spite(s).

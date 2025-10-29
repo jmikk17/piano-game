@@ -212,8 +212,8 @@ class MusicPlayer:
 
         """
         self.note_manager.draw(screen)
-        auxil.display_score(self.score, screen, auxil.WHITE)
-        auxil.display_octave(self.input_handler.octave, screen, auxil.WHITE)
+        auxil.display_score(self.score, screen, auxil.BLACK)
+        auxil.display_octave(self.input_handler.octave, screen, auxil.BLACK)
 
         for key, is_pressed in self.key_state.items():
             if is_pressed:
@@ -226,7 +226,7 @@ class MusicPlayer:
                 )
 
         if std_cfg.DEBUG_MODE:
-            auxil.display_fps(pygame.time.Clock(), screen, auxil.WHITE)
+            auxil.display_fps(pygame.time.Clock(), screen, auxil.BLACK)
 
 
 class AudioManager:
@@ -256,6 +256,7 @@ class AudioManager:
         self.b_track = None
         if self.song.b_path:
             self.b_track = pygame.mixer.Sound(resource_path("audio/" + self.song.b_path))
+            self.b_track.set_volume(std_cfg.B_TRACK_VOL)
 
         self.playing = {
             octave_key: dict.fromkeys(self.assets.note_sounds[octave_key], False)
@@ -270,11 +271,14 @@ class AudioManager:
 
         """
         current_time = pygame.time.get_ticks() / 1000.0
-        if self.song.b_path and current_time - start_time >= self.play_b_time and not self.b_playing:
+        if self.b_track is None:
+            return
+        play_time = self.play_b_time or 0.0
+        if current_time - start_time >= play_time and not self.b_playing:
             self.b_playing = True
             self.b_track.play()
 
-    def play_notes(self, key_state: dict[str, bool], octave: int) -> None:
+    def play_notes(self, key_state: dict[int, bool], octave: int) -> None:
         """Play notes according to keys that are pressed.
 
         Args:
@@ -288,9 +292,9 @@ class AudioManager:
                 self.playing[str(octave)][key] = True
             elif not is_pressed:
                 for octave_key in self.assets.note_sounds:
-                    if self.playing[str(octave)][key]:
+                    if self.playing[octave_key][key]:
                         self.assets.note_sounds[octave_key][key].fadeout(std_cfg.FADEOUT)
-                        self.playing[str(octave)][key] = False
+                        self.playing[octave_key][key] = False
 
 
 class InputHandler:

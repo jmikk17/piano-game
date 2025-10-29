@@ -65,7 +65,7 @@ class MainMenu(BaseMenu):
         """
         super().__init__(assets, layout)
 
-        self.options = ["Play", "Options", "Exit"]
+        self.options = ["Play", "Tutorial", "Exit"]
         self.scaled_background = None
         self.buttons = []
         button_y = self.layout.content_start_y
@@ -119,7 +119,7 @@ class MainMenu(BaseMenu):
                         sys.exit()
                     elif button.text == "Play":
                         return "SHOW_SONG_SELECT", None
-                    elif button.text == "Options":
+                    elif button.text == "Tutorial":
                         return "SHOW_OPTIONS", None
         return None, None
 
@@ -282,19 +282,23 @@ class OptionsMenu(BaseMenu):
 
         """
         super().__init__(assets, layout)
-        self.options = ["TO DO"]
+        self.text = [
+            "Like Guitar Hero but with a piano",
+            "A to J on your keyboard is C to B notes on a piano",
+            "Arrow up and down used to swap octave (5 and 6)",
+        ]
 
         self.scaled_background = None
 
         self.buttons = []
         button_y = self.layout.content_start_y
-        for idx, name in enumerate(self.options):
+        for idx, name in enumerate(self.text):
             self.buttons.append(
                 ui.Button(
                     self.layout.x_center,
                     button_y,
                     self.layout.colors["text"],
-                    self.layout.colors["selected"],
+                    self.layout.colors["text"],
                     name,
                 ),
             )
@@ -322,8 +326,7 @@ class OptionsMenu(BaseMenu):
         else:
             screen.fill(self.layout.colors["background"])
 
-        self.draw_title(screen, self.layout.x_center, self.layout.title_y, "Options")
-
+        self.draw_title(screen, self.layout.x_center, self.layout.title_y, "Tutorial")
         for button in self.buttons:
             button.draw(screen)
 
@@ -343,9 +346,6 @@ class OptionsMenu(BaseMenu):
             pos = pygame.mouse.get_pos()
             if self.back_button.is_over(pos):
                 return "SHOW_MAIN_MENU", None
-            for button in self.buttons:
-                if button.is_over(pos) and button.text == "TO DO":
-                    pass
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_ESCAPE:
                 return "SHOW_MAIN_MENU", None

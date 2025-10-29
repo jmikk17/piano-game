@@ -21,7 +21,9 @@ class MenuAssets:
     def load(self) -> None:
         """Load the menu assets."""
         try:
-            self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
+            # self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
+            self.background = pygame.Surface((1280, 720))
+            self.background.fill(auxil.WHITE)
         except (pygame.error, FileNotFoundError):
             log.log_write("Menu background img not found", logging.ERROR)
             self.background = pygame.Surface((1280, 720))
@@ -52,7 +54,9 @@ class GameAssets:
             log.log_write("Trumpet sprite not found", logging.ERROR)
 
         try:
-            self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
+            # self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
+            self.background = pygame.Surface((1280, 720))
+            self.background.fill(auxil.WHITE)
         except (pygame.error, FileNotFoundError):
             log.log_write("Menu background img not found", logging.ERROR)
             self.background = pygame.Surface((1280, 720))

@@ -1,9 +1,0 @@
-{
-  "title": "Free play",
-  "difficulty": "Easy",
-  "bpm": 120,
-  "slots_per_bar": 16,
-  "notes": [
-    {"bar": 1, "slot": 1, "note_type": 4, "pitch": 0}
-  ]
-  }

@@ -19,6 +19,7 @@ class Config:
     MIN_OCTAVE = 5
     MAX_OCTAVE = 6
     NOTE_MIRROR = 7
+    B_TRACK_VOL = 0.5
 
     # Play area settings
     PLAY_AREA_X = 350
