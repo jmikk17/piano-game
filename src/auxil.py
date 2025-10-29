@@ -10,15 +10,7 @@ BLUE = (0, 0, 255)
 
 
 # List of all playable keys
-keys = [
-    pygame.K_a,
-    pygame.K_s,
-    pygame.K_d,
-    pygame.K_f,
-    pygame.K_g,
-    pygame.K_h,
-    pygame.K_j,
-]
+keys = [pygame.K_a, pygame.K_s, pygame.K_d, pygame.K_f, pygame.K_g, pygame.K_h, pygame.K_j, pygame.K_k]
 
 # Dictionary mapping playable keys to index in song
 key_dictionary = {
@@ -30,6 +22,7 @@ key_dictionary = {
     4: pygame.K_g,
     5: pygame.K_h,
     6: pygame.K_j,
+    7: pygame.K_k,
 }
 
 

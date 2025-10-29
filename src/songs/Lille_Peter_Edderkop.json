@@ -3,7 +3,7 @@
   "difficulty": "Easy",
   "bpm": 120,
   "slots_per_bar": 16,
-  "b_path": "test_b.ogg",
+  "b_path": "lille_peter_edderkop_b.ogg",
   "notes": [
     {"bar": 1, "slot": 1, "note_type": 4, "pitch": 0},
     {"bar": 1, "slot": 5, "note_type": 4, "pitch": 0},

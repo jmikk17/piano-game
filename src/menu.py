@@ -286,8 +286,7 @@ class OptionsMenu(BaseMenu):
         super().__init__(assets, layout)
         self.text = [
             "Like Guitar Hero but with a piano",
-            "A to J on your keyboard is C to B notes on a piano",
-            "Arrow up and down used to swap octave (5 and 6)",
+            "A to K on your keyboard is C5 to C6 notes on a piano",
         ]
 
         self.scaled_background = None

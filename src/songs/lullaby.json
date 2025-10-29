@@ -1,0 +1,60 @@
+{
+  "title": "Lullaby",
+  "difficulty": "Easy",
+  "bpm": 120,
+  "slots_per_bar": 16,
+  "b_path": "lullaby_b.mp3",
+  "notes": [
+    {"bar": 2, "slot": 1, "note_type": 4, "pitch": 7},
+    {"bar": 2, "slot": 5, "note_type": 4, "pitch": 6},
+    {"bar": 2, "slot": 9, "note_type": 4, "pitch": 2},
+    {"bar": 2, "slot": 13, "note_type": 4, "pitch": 4},
+
+    {"bar": 3, "slot": 1, "note_type": 16, "pitch": 4},
+
+    {"bar": 4, "slot": 1, "note_type": 4, "pitch": 7},
+    {"bar": 4, "slot": 5, "note_type": 4, "pitch": 6},
+    {"bar": 4, "slot": 9, "note_type": 4, "pitch": 2},
+    {"bar": 4, "slot": 13, "note_type": 4, "pitch": 4},
+
+    {"bar": 5, "slot": 1, "note_type": 16, "pitch": 1},
+
+    {"bar": 6, "slot": 5, "note_type": 4, "pitch": 2},
+    {"bar": 6, "slot": 9, "note_type": 4, "pitch": 2},
+    {"bar": 6, "slot": 13, "note_type": 4, "pitch": 4},
+
+    {"bar": 7, "slot": 1, "note_type": 16, "pitch": 1},
+
+    {"bar": 8, "slot": 5, "note_type": 4, "pitch": 1},
+    {"bar": 8, "slot": 9, "note_type": 4, "pitch": 1},
+    {"bar": 8, "slot": 13, "note_type": 4, "pitch": 0},
+
+    {"bar": 9, "slot": 1, "note_type": 16, "pitch": 0},
+
+    {"bar": 10, "slot": 1, "note_type": 4, "pitch": 7},
+    {"bar": 10, "slot": 5, "note_type": 4, "pitch": 6},
+    {"bar": 10, "slot": 9, "note_type": 4, "pitch": 2},
+    {"bar": 10, "slot": 13, "note_type": 4, "pitch": 4},
+
+    {"bar": 11, "slot": 1, "note_type": 16, "pitch": 4},
+
+    {"bar": 12, "slot": 1, "note_type": 4, "pitch": 7},
+    {"bar": 12, "slot": 5, "note_type": 4, "pitch": 6},
+    {"bar": 12, "slot": 9, "note_type": 4, "pitch": 2},
+    {"bar": 12, "slot": 13, "note_type": 4, "pitch": 4},
+
+    {"bar": 13, "slot": 1, "note_type": 16, "pitch": 1},
+
+    {"bar": 14, "slot": 5, "note_type": 4, "pitch": 2},
+    {"bar": 14, "slot": 9, "note_type": 4, "pitch": 2},
+    {"bar": 14, "slot": 13, "note_type": 4, "pitch": 4},
+
+    {"bar": 15, "slot": 1, "note_type": 16, "pitch": 1},
+
+    {"bar": 16, "slot": 5, "note_type": 4, "pitch": 1},
+    {"bar": 16, "slot": 9, "note_type": 4, "pitch": 1},
+    {"bar": 16, "slot": 13, "note_type": 4, "pitch": 0},
+
+    {"bar": 17, "slot": 1, "note_type": 16, "pitch": 0}
+  ]
+}

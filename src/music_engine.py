@@ -213,7 +213,6 @@ class MusicPlayer:
         """
         self.note_manager.draw(screen)
         auxil.display_score(self.score, screen, auxil.BLACK)
-        auxil.display_octave(self.input_handler.octave, screen, auxil.BLACK)
 
         for key, is_pressed in self.key_state.items():
             if is_pressed:
@@ -286,19 +285,31 @@ class AudioManager:
             octave (int): The current octave of the keyboard
 
         """
-        for key, is_pressed in key_state.items():
-            if is_pressed and self.playing[str(octave)][key] is False:
-                self.assets.note_sounds[str(octave)][key].play()
-                self.playing[str(octave)][key] = True
+        for physical_key, is_pressed in key_state.items():
+            note_key = physical_key
+            note_octave = octave
+            if note_key == pygame.K_k:
+                note_octave = note_octave + 1
+                note_key = pygame.K_a
+
+            if is_pressed and self.playing[str(note_octave)][note_key] is False:
+                self.assets.note_sounds[str(note_octave)][note_key].play()
+                self.playing[str(note_octave)][note_key] = True
             elif not is_pressed:
                 for octave_key in self.assets.note_sounds:
-                    if self.playing[octave_key][key]:
-                        self.assets.note_sounds[octave_key][key].fadeout(std_cfg.FADEOUT)
-                        self.playing[octave_key][key] = False
+                    if self.playing[octave_key][note_key]:
+                        # Only fade out if not played by other key
+                        if note_key == pygame.K_a and (key_state[pygame.K_a] or key_state[pygame.K_k]):
+                            pass
+                        else:
+                            self.assets.note_sounds[octave_key][note_key].fadeout(std_cfg.FADEOUT)
+                            self.playing[octave_key][note_key] = False
 
 
 class InputHandler:
     """A class for managing input during a song.
+
+    Can possibly add octave changer here eventually.
 
     Methods:
         handle_input: Handle input during a song, such as changing octave or quitting
@@ -330,10 +341,6 @@ class InputHandler:
                     if b_playing and b_track:
                         b_track.stop()
                     return "QUIT_TO_MENU"
-                if event.key == pygame.K_UP and self.octave < std_cfg.MAX_OCTAVE:
-                    self.octave += 1
-                if event.key == pygame.K_DOWN and self.octave > std_cfg.MIN_OCTAVE:
-                    self.octave -= 1
         return None
 
     def check_keyboard(self) -> dict:
@@ -404,6 +411,9 @@ class NoteManager:
                         flip_y=True,
                     )
                     note.rect = note.image.get_rect(center=(1200, 260 - note.pitch * 10))
+                elif note.pitch == 0:
+                    note.image = self.assets.note_pictures_help[str(note.note_type)]
+                    note.rect = note.image.get_rect(center=(1200, 180 - note.pitch * 10))
                 else:
                     note.image = self.assets.note_pictures[str(note.note_type)]
                     note.rect = note.image.get_rect(center=(1200, 180 - note.pitch * 10))
@@ -445,8 +455,8 @@ class NoteManager:
             for key, playing in key_state.items():
                 if (
                     playing
-                    and auxil.key_dictionary[note.pitch % 7] == key
-                    and (note.pitch // 7) + std_cfg.MIN_OCTAVE == octave
+                    and auxil.key_dictionary[note.pitch % 8] == key
+                    and (note.pitch // 8) + std_cfg.MIN_OCTAVE == octave
                 ):
                     distance = abs(note.rect.centerx - self.play_center)
                     note.score = (

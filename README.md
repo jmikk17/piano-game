@@ -1,6 +1,6 @@
-# Piano Game
+# Piano game
 
-![Piano Game Screenshot](screenshot.png "Piano Game")
+![Piano Game Screenshot](screenshot.png "Piano game")
 
 ## Installation
 
@@ -12,5 +12,4 @@
    ```
 
 ## Controls
-a to j on keyboard used as C to H on piano, currently no # or b.
-Octave shifted up on down with arrow keys.
+a to j on keyboard used as C5 to C6 on piano, currently no # or b.

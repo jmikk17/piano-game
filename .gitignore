@@ -1,5 +1,5 @@
 game.log
-game.spec
+*.spec
 keybinds.json
 *.pyc
 .coverage
