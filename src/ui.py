@@ -8,7 +8,6 @@ import auxil
 from cfg import std_cfg
 
 if TYPE_CHECKING:
-    from game import Game
     from menu import MenuManager
 
 
@@ -20,7 +19,7 @@ class Mediator:
         self.manager = None
         self.ui = None
 
-    def set_manager(self, manager: MenuManager | Game) -> None:
+    def set_manager(self, manager: MenuManager) -> None:
         """Set the manager for the mediator.
 
         Args:
@@ -100,16 +99,6 @@ class UIAuxil:
         if mediate:
             self.mediator.notify(self)
 
-    def get_item_rect(self, index: int) -> pygame.Rect:
-        """Get the rectangle for a menu item at given index in list.
-
-        Args:
-            index (int): The index of the item in the list.
-
-        """
-        y = self.content_start_y + (self.item_height + self.item_padding) * index
-        return pygame.Rect(self.content_x, y, self.content_width, self.item_height)
-
     def get_item_text_pos(self, item_rect: pygame.Rect) -> tuple[int, int]:
         """Get the centered position for text within an item rectangle.
 
@@ -130,7 +119,7 @@ class Button:
         color: tuple,
         hover_color: tuple,
         text: str = "",
-        font: pygame.font.Font = std_cfg.FONT,
+        font_name: str = std_cfg.FONT,
     ) -> None:
         """Initialize the button.
 
@@ -140,13 +129,13 @@ class Button:
             color (tuple): The color of the button.
             hover_color (tuple): The color of the button when hovered.
             text (str, optional): The text to display on the button. Defaults to "".
-            font (pygame.font.Font, optional): The font to use for the text. Defaults to std_cfg.FONT.
+            font (str, optional): Name of font to use for the text. Defaults to std_cfg.FONT.
 
         """
         self.cen_x = cen_x
         self.y = y
         self.text = text
-        self.font = auxil.get_sysfont(font, 36)
+        self.font = auxil.get_sysfont(font_name, 36)
 
         self.color = color
         self.hover_color = hover_color

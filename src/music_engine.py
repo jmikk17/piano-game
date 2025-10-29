@@ -36,8 +36,8 @@ class Note:
         self.active = False
         self.hit = False
 
-        self.rect = None
-        self.image = None
+        self.rect: pygame.Rect | None = None
+        self.image: pygame.Surface | None = None
 
         self.score = 0
 
@@ -327,7 +327,7 @@ class InputHandler:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    if b_playing:
+                    if b_playing and b_track:
                         b_track.stop()
                     return "QUIT_TO_MENU"
                 if event.key == pygame.K_UP and self.octave < std_cfg.MAX_OCTAVE:
@@ -418,7 +418,7 @@ class NoteManager:
 
         """
         score = 0
-        to_remove = [note for note in self.active_notes if note.hit or note.rect.x < 100]
+        to_remove = [note for note in self.active_notes if note.hit or note.rect.x < std_cfg.PLAY_AREA_Y]
         for note in to_remove:
             score += note.score
             self.active_notes.remove(note)

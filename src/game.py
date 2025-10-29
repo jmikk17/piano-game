@@ -37,11 +37,15 @@ class Game:
         self.layout = layout
 
         self.scaled_background = None
-        if self.layout.x_unit * 100 != std_cfg.SCREEN_WIDTH or self.layout.y_unit * 100 != std_cfg.SCREEN_HEIGHT:
+        if (
+            self.layout.x_unit * 100 != std_cfg.SCREEN_WIDTH or self.layout.y_unit * 100 != std_cfg.SCREEN_HEIGHT
+        ) and self.assets.background:
             self.scaled_background = pygame.transform.scale(
                 self.assets.background,
                 (self.layout.x_unit * 100, self.layout.y_unit * 100),
             )
+
+        # For now we use hardcoded values for the layout when the game is running
 
         self.lines = 5
         self.line_thick = 2
@@ -54,16 +58,12 @@ class Game:
         self.play_width = self.play_box[2] / 2
         self.play_center = self.play_box[0] + self.play_width
 
+        # 1200 is the hardcoded value for where we spawn notes on screen
+        # A 0.1 sec correction is neccesacry, not sure why
+
         self.play_b_delay = 0.1 + (1200 - self.play_center) / std_cfg.NOTE_VELOCITY
-        # 1200 is the hardcoded value for where we spawn notes,
-        # self.play_center is the hardcoded value for where we register hit
-        # TODO 0.1 correction seems neccesary, not sure why
 
         self.musicplayer = MusicPlayer(data, self.assets, self.play_center, self.play_width, self.play_b_delay)
-
-        # One of each sprite should be intilized in assets - here we change the position of the sprite
-        self.assets.sprite_manager.change_position("trumpet", (500, 500))
-        # We can also do a copy of the sprite and change position and update interval
 
     def draw(self, screen: pygame.Surface) -> None:
         """Draw the background, static part of the music player, and the spite(s).
@@ -92,8 +92,6 @@ class Game:
 
         self.musicplayer.draw(screen)
 
-        self.assets.sprite_manager.draw(screen)
-
     def update(self, dt: float) -> str | None:
         """Update the music player and the sprite(s).
 
@@ -104,9 +102,4 @@ class Game:
             str: Return a string with "QUIT_TO_MENU" if the game should return to the menu.
 
         """
-        status = self.musicplayer.update(dt)
-
-        # sprite test!
-        self.assets.sprite_manager.update(dt)
-
-        return status
+        return self.musicplayer.update(dt)

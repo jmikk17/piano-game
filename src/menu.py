@@ -140,10 +140,11 @@ class MainMenu(BaseMenu):
             button_y = self.buttons[i].rect.bottom + self.layout.pad_y
 
         # Scale background
-        self.scaled_background = pygame.transform.scale(
-            self.assets.background,
-            (self.layout.x_unit * 100, self.layout.y_unit * 100),
-        )
+        if self.assets.background:
+            self.scaled_background = pygame.transform.scale(
+                self.assets.background,
+                (self.layout.x_unit * 100, self.layout.y_unit * 100),
+            )
 
 
 class SongSelectMenu(BaseMenu):
@@ -264,10 +265,11 @@ class SongSelectMenu(BaseMenu):
 
         self.back_button.update(self.layout.x_center, self.layout.content_end_y)
 
-        self.scaled_background = pygame.transform.scale(
-            self.assets.background,
-            (self.layout.x_unit * 100, self.layout.y_unit * 100),
-        )
+        if self.assets.background:
+            self.scaled_background = pygame.transform.scale(
+                self.assets.background,
+                (self.layout.x_unit * 100, self.layout.y_unit * 100),
+            )
 
 
 class OptionsMenu(BaseMenu):
@@ -367,10 +369,11 @@ class OptionsMenu(BaseMenu):
 
         self.back_button.update(self.layout.x_center, self.layout.content_end_y)
 
-        self.scaled_background = pygame.transform.scale(
-            self.assets.background,
-            (self.layout.x_unit * 100, self.layout.y_unit * 100),
-        )
+        if self.assets.background:
+            self.scaled_background = pygame.transform.scale(
+                self.assets.background,
+                (self.layout.x_unit * 100, self.layout.y_unit * 100),
+            )
 
 
 class MenuManager:

@@ -5,7 +5,6 @@ import pygame
 import auxil
 import log
 from resource_path import resource_path
-from sprite import Sprite, SpriteManager
 
 # Need to initilize mixer before we can load sound
 pygame.mixer.init()
@@ -20,14 +19,8 @@ class MenuAssets:
 
     def load(self) -> None:
         """Load the menu assets."""
-        try:
-            # self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
-            self.background = pygame.Surface((1280, 720))
-            self.background.fill(auxil.WHITE)
-        except (pygame.error, FileNotFoundError):
-            log.log_write("Menu background img not found", logging.ERROR)
-            self.background = pygame.Surface((1280, 720))
-            self.background.fill(auxil.WHITE)
+        self.background = pygame.Surface((1280, 720))
+        self.background.fill(auxil.WHITE)
 
     def unload(self) -> None:
         """Unloadoad the menu assets."""
@@ -40,27 +33,12 @@ class GameAssets:
 
     def __init__(self) -> None:
         """Initialize the GameAssets class."""
-        self.sprite_manager = SpriteManager()
-
         self.background = None
 
     def load(self) -> None:
         """Load the game assets."""
-        try:
-            # The asset manager doesn't know about UI, so we add sprites with default position and change later
-            trumpet_sprite = Sprite(resource_path("graphics/trumpet.png"), 32, 32)
-            self.sprite_manager.add_sprite("trumpet", trumpet_sprite, 0.1)
-        except (pygame.error, FileNotFoundError):
-            log.log_write("Trumpet sprite not found", logging.ERROR)
-
-        try:
-            # self.background = pygame.image.load(resource_path("graphics/menu/background.png"))
-            self.background = pygame.Surface((1280, 720))
-            self.background.fill(auxil.WHITE)
-        except (pygame.error, FileNotFoundError):
-            log.log_write("Menu background img not found", logging.ERROR)
-            self.background = pygame.Surface((1280, 720))
-            self.background.fill(auxil.WHITE)
+        self.background = pygame.Surface((1280, 720))
+        self.background.fill(auxil.WHITE)
 
         try:
             self.note_sounds_5 = {
@@ -132,8 +110,6 @@ class GameAssets:
             if self.note_sounds[octave]:
                 for sound in self.note_sounds[octave].values():
                     sound.stop()
-                self.note_sounds[octave] = None
+                self.note_sounds[octave] = {}
         if self.sprite_manager:
             self.sprite_manager = None
-
-        # Could add loading of fonts, menu music, etc. here

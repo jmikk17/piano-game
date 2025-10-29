@@ -61,7 +61,8 @@ class GameStateManager:
 
         elif self.current_state == "GAME":
             # In Game we need to update every frame without there being an input, so we handle quit inside
-            game_status = self.game.update(dt)
+            if self.game:
+                game_status = self.game.update(dt)
             if game_status == "QUIT_TO_MENU":
                 self.handle_state_transition("RETURN_TO_MENU", None)
 
@@ -69,7 +70,7 @@ class GameStateManager:
         """Draw the menu or game state to the screen."""
         if self.current_state == "MENU":
             self.menu_manager.draw(self.screen)
-        elif self.current_state == "GAME":
+        elif self.current_state == "GAME" and self.game:
             self.game.draw(self.screen)
 
     def handle_state_transition(self, action: str, data: str | None) -> None:
@@ -89,7 +90,8 @@ class GameStateManager:
             self.layout.update_ui(std_cfg.SCREEN_WIDTH, std_cfg.SCREEN_HEIGHT, mediate=True)
             self.current_state = "GAME"
             # Instance of game starts the internal game clock, so we start a new "Game" when a song is picked
-            self.game = Game(data, self.layout)
+            if data:
+                self.game = Game(data, self.layout)
         elif action == "RETURN_TO_MENU":
             width, height = self.screen.get_width(), self.screen.get_height()
             self.screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
